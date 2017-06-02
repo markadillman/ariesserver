@@ -1055,19 +1055,56 @@ function doEnterButton() {
 // SVG-to-platform helper function
 function buildSurfacesFromSVG(svg)
 {
-	// Find p (platform) string
+	// Create parser
+	var parser = new DOMParser();
+	svgXml = parser.parseFromString(svg, "svg+xml");
 
-	// Get permeable platforms (red)
-	// For pair in string:
-	var coords = str.split(" ");
-	for(i = 0; i < coords.length; i += 2)
+	// Find p (platform) strings
+	var pTags = svgXml.getElementsByTagName("polyline");
+
+	for(j = 0; j < pTags.length; j += 1)
 	{
-		// Create entity from coords[i] and coords[i + 1] to coords[i + 2] and coords[i + 3]
-		Crafty.e('Platform, 2D, Canvas')
-			.attr({x: coords[i], y: coords[i + 1]});
-	}
+		// Get permeable platforms (red)
+		if(pTags[i].id.charAt(0) == "p" && pTags[i].style.includes("stroke: #ff0000"))
+		{
+			var platformType = "Platform";
+		}
 
-	// Get impermeable walls (black)
-	// For pair in string:
-		// Create entity
+		else if(pTags[i].id.charAt(0) == "p" && pTags[i].style.includes("stroke: #000000"))
+		{
+			var platformType = "Wall";
+		}
+
+		var str = pTags[i].points;
+
+		// For pair in string:
+		var coords = str.split(" ");
+		for(i = 0; i < coords.length; i += 2)
+		{
+			// Create entity from coords[i] and coords[i + 1] to coords[i + 2] and coords[i + 3]
+			// Explicit is better than implicit :)
+			var thisX = coords[i];
+			var thisY = coords[i + 1];
+			var nextX = coords[i + 2];
+			var nextY = coords[i + 3];
+			
+			// Adapted from https://github.com/craftyjs/Crafty/wiki/Crafty-FAQ-(draft)
+			Crafty.c(platformType, {
+				init: function() {
+					this.requires("2D, Canvas");
+					this.bind("Draw", this._draw_me);
+					this.ready = true;
+				},
+				_draw_me: function(e) {
+					var ctx = e.ctx;
+					ctx.lineWidth = 2;
+					ctx.strokeStyle = "green";
+					ctx.beginPath();
+					ctx.moveTo(nextX, nextY);
+					ctx.stroke();
+				}
+			});
+			Crafty.e(platformType).attr({x: thisX, y: thisY, w: 2, h: 2});
+		}
+	}
 }
