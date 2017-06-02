@@ -27,7 +27,6 @@ var creditsText = titleString + "<br>" +
 	"GAME MUSIC<br>" +
 	"Antonina (Toni) York";
 
-
 var tileWidth = 600;
 var tileHeight = 350;
 var canvasEdge = 50;
@@ -1052,3 +1051,23 @@ function doEnterButton() {
 	Crafty.enterScene('World');
 }
 // end Toni's code
+
+// SVG-to-platform helper function
+function buildSurfacesFromSVG(svg)
+{
+	// Find p (platform) string
+
+	// Get permeable platforms (red)
+	// For pair in string:
+	var coords = str.split(" ");
+	for(i = 0; i < coords.length; i += 2)
+	{
+		// Create entity from coords[i] and coords[i + 1] to coords[i + 2] and coords[i + 3]
+		Crafty.e('Platform, 2D, Canvas')
+			.attr({x: coords[i], y: coords[i + 1]});
+	}
+
+	// Get impermeable walls (black)
+	// For pair in string:
+		// Create entity
+}
