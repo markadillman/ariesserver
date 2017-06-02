@@ -943,22 +943,23 @@ function buildSurfacesFromSVG(svg)
 
 		else if(pTags[i].id.charAt(0) == "p" && pTags[i].style.includes("stroke: #000000"))
 		{
-			var platformType = "Wall";
+			var platformType = "Wall";  // TODO: Differentiate drop-through behavior
 		}
 
-		var str = pTags[i].points;
+		var str = pTags[i].points;  // Raw coordinates string
 
 		// For pair in string:
-		var coords = str.split(" ");
+		var coords = str.split(" ");  // Array of coordinates
 		for(i = 0; i < coords.length; i += 2)
 		{
 			// Create entity from coords[i] and coords[i + 1] to coords[i + 2] and coords[i + 3]
+
 			// Explicit is better than implicit :)
 			var thisX = coords[i];
 			var thisY = coords[i + 1];
 			var nextX = coords[i + 2];
 			var nextY = coords[i + 3];
-			
+
 			// Adapted from https://github.com/craftyjs/Crafty/wiki/Crafty-FAQ-(draft)
 			Crafty.c(platformType, {
 				init: function() {
@@ -969,12 +970,14 @@ function buildSurfacesFromSVG(svg)
 				_draw_me: function(e) {
 					var ctx = e.ctx;
 					ctx.lineWidth = 2;
-					ctx.strokeStyle = "green";
+					ctx.strokeStyle = "green";  // FIXME: Change this to invisible after testing
 					ctx.beginPath();
 					ctx.moveTo(nextX, nextY);
 					ctx.stroke();
 				}
 			});
+
+			// Instantiate platform
 			Crafty.e(platformType).attr({x: thisX, y: thisY, w: 2, h: 2});
 		}
 	}
