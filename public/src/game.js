@@ -931,7 +931,7 @@ function buildSurfacesFromSVG(svg, tileX, tileY)
 {
 	// Create parser
 	var parser = new DOMParser();
-	svgXml = parser.parseFromString(svg, "svg+xml");
+	svgXml = parser.parseFromString(svg, "text/xml");
 
 	// Find p (platform) strings
 	var pTags = svgXml.getElementsByTagName("polyline");
