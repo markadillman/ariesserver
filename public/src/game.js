@@ -684,6 +684,9 @@ function assetRender(assets){
 			console.log(blobSvg);
 		}
 		img.src = url;
+
+		// Set up surfaces
+		buildSurfacesFromSVG(assets[asset]['svg'], tempX, tempY);
 	}
 	// start Toni's code
 	// add the calls to update platforms and player here!
@@ -1053,7 +1056,7 @@ function doEnterButton() {
 // end Toni's code
 
 // SVG-to-platform helper function
-function buildSurfacesFromSVG(svg)
+function buildSurfacesFromSVG(svg, tileX, tileY)
 {
 	// Create parser
 	var parser = new DOMParser();
@@ -1065,29 +1068,30 @@ function buildSurfacesFromSVG(svg)
 	for(j = 0; j < pTags.length; j += 1)
 	{
 		// Get permeable platforms (red)
-		if(pTags[i].id.charAt(0) == "p" && pTags[i].style.includes("stroke: #ff0000"))
+		if(pTags[i].getAttribute('id').charAt(0) == "p" &&
+		   pTags[i].getAttribute('style').includes("stroke: #ff0000"))
 		{
 			var platformType = "Platform";
 		}
 
-		else if(pTags[i].id.charAt(0) == "p" && pTags[i].style.includes("stroke: #000000"))
+		else if(pTags[i].getAttribute('id').charAt(0) == "p" &&
+			    pTags[i].getAttribute('style').includes("stroke: #000000"))
 		{
-			var platformType = "Wall";  // TODO: Differentiate drop-through behavior
+			var platformType = "Platform";  // FIXME: Change to Wall
 		}
 
-		var str = pTags[i].points;  // Raw coordinates string
+		var str = pTags[i].getAttribute('points');  // Raw coordinates string
 
 		// For pair in string:
 		var coords = str.split(" ");  // Array of coordinates
+
+		// Create entity from coords[i] and coords[i + 1] to coords[i + 2] and coords[i + 3]
 		for(i = 0; i < coords.length; i += 2)
 		{
-			// Create entity from coords[i] and coords[i + 1] to coords[i + 2] and coords[i + 3]
-
-			// Explicit is better than implicit :)
-			var thisX = coords[i];
-			var thisY = coords[i + 1];
-			var nextX = coords[i + 2];
-			var nextY = coords[i + 3];
+			var thisX = coords[i] + tileX;
+			var thisY = coords[i + 1] + tileY;
+			var nextX = coords[i + 2] + tileX;
+			var nextY = coords[i + 3] + tileY;
 
 			// Adapted from https://github.com/craftyjs/Crafty/wiki/Crafty-FAQ-(draft)
 			Crafty.c(platformType, {
