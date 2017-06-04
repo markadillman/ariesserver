@@ -685,8 +685,11 @@ function assetRender(assets){
 		}
 		img.src = url;
 
-		// Set up surfaces
-		buildSurfacesFromSVG(assets[asset]['svg'], tempX, tempY);
+		// Set up surfaces if this is the center tile
+		if(assets[asset]['xcoord'] == 0 && assets[asset]['ycoord'] == 0)
+		{
+			buildSurfacesFromSVG(assets[asset]['svg'], tempX, tempY);
+		}
 	}
 	// start Toni's code
 	// add the calls to update platforms and player here!
@@ -1058,6 +1061,9 @@ function doEnterButton() {
 // SVG-to-platform helper function
 function buildSurfacesFromSVG(svg, tileX, tileY)
 {
+	// Append/prepend tags to get parser to play nice
+	svg = '<svg>' + svg + '</svg>';
+
 	// Create parser
 	var parser = new DOMParser();
 	svgXml = parser.parseFromString(svg, "text/xml");
@@ -1072,21 +1078,23 @@ function buildSurfacesFromSVG(svg, tileX, tileY)
 
 		// Get permeable platforms (red)
 		if(pTags[j].getAttribute('id').charAt(0) == "p" &&
-		   pTags[j].getAttribute('style').includes("stroke: #ff0000"))
+		   pTags[j].getAttribute('style').includes("stroke: red"))
 		{
 			var platformType = "Platform";
 		}
 
 		else if(pTags[j].getAttribute('id').charAt(0) == "p" &&
-			    pTags[j].getAttribute('style').includes("stroke: #000000"))
+			    pTags[j].getAttribute('style').includes("stroke: black"))
 		{
 			var platformType = "Platform";  // FIXME: Change to Wall
 		}
 		else
 		{
 			// Not a platform
+			console.log('Not a platform.');
 			continue;
 		}
+		console.log('Platform!');
 
 		var str = pTags[j].getAttribute('points');  // Raw coordinates string
 
@@ -1120,7 +1128,9 @@ function buildSurfacesFromSVG(svg, tileX, tileY)
 
 			// Instantiate platform
 			Crafty.e(platformType).attr({x: thisX, y: thisY, w: 2, h: 2});
-			console.log('Adding platform at ' + thisX + thisY);
+			console.log('Adding platform at ');
+			console.log(thisX);
+			console.log(thisY);
 		}
 	}
 }
