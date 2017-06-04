@@ -1052,6 +1052,7 @@ function myEditAvatarClick() {
 		doAvatarEdit(carouselData[carouselIndex]);
 	}
 }
+
 function doEnterButton() {
 	// enter the world
 	Crafty.enterScene('World');
