@@ -1067,20 +1067,28 @@ function buildSurfacesFromSVG(svg, tileX, tileY)
 
 	for(j = 0; j < pTags.length; j += 1)
 	{
+		console.log('ID: ' + pTags[j].getAttribute('id'));
+		console.log('Style: ' + pTags[j].getAttribute('style'));
+
 		// Get permeable platforms (red)
-		if(pTags[i].getAttribute('id').charAt(0) == "p" &&
-		   pTags[i].getAttribute('style').includes("stroke: #ff0000"))
+		if(pTags[j].getAttribute('id').charAt(0) == "p" &&
+		   pTags[j].getAttribute('style').includes("stroke: #ff0000"))
 		{
 			var platformType = "Platform";
 		}
 
-		else if(pTags[i].getAttribute('id').charAt(0) == "p" &&
-			    pTags[i].getAttribute('style').includes("stroke: #000000"))
+		else if(pTags[j].getAttribute('id').charAt(0) == "p" &&
+			    pTags[j].getAttribute('style').includes("stroke: #000000"))
 		{
 			var platformType = "Platform";  // FIXME: Change to Wall
 		}
+		else
+		{
+			// Not a platform
+			continue;
+		}
 
-		var str = pTags[i].getAttribute('points');  // Raw coordinates string
+		var str = pTags[j].getAttribute('points');  // Raw coordinates string
 
 		// For pair in string:
 		var coords = str.split(" ");  // Array of coordinates
@@ -1112,6 +1120,7 @@ function buildSurfacesFromSVG(svg, tileX, tileY)
 
 			// Instantiate platform
 			Crafty.e(platformType).attr({x: thisX, y: thisY, w: 2, h: 2});
+			console.log('Adding platform at ' + thisX + thisY);
 		}
 	}
 }
