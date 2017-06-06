@@ -373,7 +373,7 @@ function loadPlatforms() {
 	// Platforms
 	Crafty.e('Platform, 2D, Canvas, Color')
 		.attr({x: 0, y: 250, w: 250, h: 10})
-		.color('green');
+		.color('red');
 	Crafty.e('Platform, 2D, Canvas, Color')
 		.attr({x: 400, y: 300, w: 250, h: 10})
 		.color('green');
