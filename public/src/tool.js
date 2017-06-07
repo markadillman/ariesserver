@@ -369,8 +369,7 @@ function initHTML() {
 			localStorage.hello = "world";
 			localStorage.myAvatarCount = 0;
 			localStorage.myAvatars = JSON.stringify({});
-			localStorage.myTeleporterCount = 0;
-			localStorage.myTeleporters = JSON.stringify({});
+			localStorage.teleportMarkers = JSON.stringify({});
 			// debug message
 			if (debugging) {
 				console.log("Set up localStorage for the first time in this browser.");
