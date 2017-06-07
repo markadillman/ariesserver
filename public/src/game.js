@@ -424,6 +424,9 @@ function loadPlayer() {
 		xCoord = playerSpawnX;
 		yCoord = playerSpawnY;
 		firstWorldEntry = false;
+
+		// Add 0,0 to teleportation markers
+        placeTeleMarker(0, 0);
 	} else {
 		xCoord = currentPlayerX;
 		yCoord = currentPlayerY;
@@ -519,9 +522,9 @@ function loadPlayer() {
 					}, exitDelay, 0);
 				}
 				if (e.key == Crafty.keys.T) {
-					// drop a teleportation marker
-					// ### check to make sure one doesn't already exist at these coordinates?
-					// ### create marker at player's current coordinates in the world
+                    console.log('Teleport markers before: ', JSON.parse(localStorage.teleportMarkers));
+				    placeTeleMarker(player.x, player.y);
+                    console.log('Teleport markers after: ', JSON.parse(localStorage.teleportMarkers));
 				}
 				if (e.key == Crafty.keys.W) {
 					// toggle wall view mode
@@ -1071,3 +1074,43 @@ function doEnterButton() {
 	Crafty.enterScene('World');
 }
 // end Toni's code
+
+function placeTeleMarker(x, y)
+{
+    // drop a teleportation marker
+    // Get current coordinates as a string
+    var xStr = x.toString();
+    var yStr = y.toString();
+    var coordStr = '(' + xStr + ',' + yStr + ')';  // Format: (x,y)
+
+    // ### check to make sure one doesn't already exist at these coordinates
+    if(localStorage.teleportMarkers == null)
+    {
+        var teleportMarkers = [];
+    }
+    else
+    {
+        var teleportMarkers = JSON.parse(localStorage.teleportMarkers);
+    }
+
+    var exists = false;
+    for(var i = 0; i < teleportMarkers.length; i++)
+    {
+        if(teleportMarkers[i] == coordStr)
+        {
+            exists = true;
+        }
+    }
+    console.log('Exists: ', exists);
+
+    if(exists)
+    {
+        // Do nothing
+    }
+    else
+    {
+        // ### create marker at player's current coordinates in the world
+        teleportMarkers.push(coordStr);
+        localStorage.teleportMarkers = JSON.stringify(teleportMarkers);
+    }
+}
