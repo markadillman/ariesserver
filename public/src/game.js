@@ -1070,9 +1070,6 @@ function doEnterButton() {
 	// enter the world
 	Crafty.enterScene('World');
 }
-<<<<<<< Updated upstream
-// end Toni's code
-=======
 // end Toni's code
 
 // SVG-to-platform helper function
@@ -1151,4 +1148,3 @@ function buildSurfacesFromSVG(svg, tileX, tileY)
         console.log('Platform h: ', platform.h);
 	}
 }
->>>>>>> Stashed changes
