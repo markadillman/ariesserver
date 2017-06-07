@@ -21,11 +21,12 @@ var creditsText = titleString + "<br>" +
 	"Game Developer: Lucia Blackwell<br>" +
 	"Network Developer: Mark Dillman<br>" +
 	"Art Developer: Antonina (Toni) York<br><br>" +
-	"BETA TESTING<br>" +
+	"BETA TESTING AND GAME ART<br>" +
 	"The Folks at Polital Enterprises<br>" +
 	"The Nerdfighers of ANF<br><br>" +
 	"GAME MUSIC<br>" +
 	"Antonina (Toni) York";
+
 
 var tileWidth = 600;
 var tileHeight = 350;
@@ -44,6 +45,7 @@ var playerSpawnY = canvasEdge + 75;
 var playerSpawnDelay = 1000; // ms to wait before spawning player on first world entry
 var titleTextColor = '#373854';
 var selectedButtonColor = '#99CCFF';
+var panTime = 500; // ms
 var panTime = 500; // ms
 
 //MARK ADDED DATA STRUCTURE THAT OUTLINES THE ENVIRONMENT TILES LOADED
@@ -493,8 +495,28 @@ function loadPlayer() {
 				if (e.key == Crafty.keys.Q) {
 					// quit to home screen
 					// ### server cleanup stuff here?
-					doQuitToHomeScreen(); // tool.js cleanup
-					Crafty.enterScene('HomeScreen');
+					
+					// hard stop player motion and wait
+					// to make sure no assetRender calls are in progress
+					// when the quit continues
+					player.removeComponent('Gravity');
+					player.removeComponent('Multiway');
+					player.removeComponent('Motion');
+					player.removeComponent('Jumper');
+					Crafty.e('Delay').delay(function(){
+						if (debugging) {
+							console.log("Waited.");
+						}
+						// crafty globals cleanup
+						currentUpperLeftX = 0;
+						currentUpperLeftY = 0;
+						currentPlayerX = 0;
+						currentPlayerY = 0;
+						// tool.js cleanup
+						doQuitToHomeScreen();
+						// switch scenes
+						Crafty.enterScene('HomeScreen');
+					}, exitDelay, 0);
 				}
 				if (e.key == Crafty.keys.T) {
 					// drop a teleportation marker
@@ -537,7 +559,7 @@ function loadPlayer() {
 				xTile = Math.floor(currentUpperLeftX / tileWidth);
 				yTile = Math.floor(currentUpperLeftY / tileHeight);
 				var payload = {'x' : xTile, 'y': yTile};
-				if (this.x > currentUpperLeftX + tileWidth)
+				if (this.x > currentUpperLeftX + screenWidth)
 				{
 					currentUpperLeftX = currentUpperLeftX + tileWidth;
 					Crafty.viewport.pan(tileWidth, 0, panTime);
@@ -564,7 +586,7 @@ function loadPlayer() {
 					// Destroy assets in outer rightmost "ring" segment
 				}
 
-				if (this.y > currentUpperLeftY + tileHeight)
+				if (this.y > currentUpperLeftY + screenHeight)
 				{
 					currentUpperLeftY = currentUpperLeftY + tileHeight;
 					Crafty.viewport.pan(0, tileHeight, panTime);
@@ -702,8 +724,6 @@ function assetRender(assets){
 			}
 			loadPlayer();
 		}, playerSpawnDelay, 0);
-	} else {
-		loadPlayer();
 	}
 	// end Toni's code
 }
@@ -1052,7 +1072,6 @@ function myEditAvatarClick() {
 		doAvatarEdit(carouselData[carouselIndex]);
 	}
 }
-
 function doEnterButton() {
 	// enter the world
 	Crafty.enterScene('World');
@@ -1070,7 +1089,7 @@ function buildSurfacesFromSVG(svg, tileX, tileY)
 	svgXml = parser.parseFromString(svg, "text/xml");
 
 	// Find p (platform) strings
-	var pTags = svgXml.getElementsByTagName("polyline");
+	var pTags = svgXml.getElementsByTagName("polygon");
 
 	for(j = 0; j < pTags.length; j += 1)
 	{
@@ -1102,36 +1121,42 @@ function buildSurfacesFromSVG(svg, tileX, tileY)
 		// For pair in string:
 		var coords = str.split(" ");  // Array of coordinates
 
-		// Create entity from coords[i] and coords[i + 1] to coords[i + 2] and coords[i + 3]
-		for(i = 0; i < coords.length; i += 2)
-		{
-			var thisX = coords[i] + tileX;
-			var thisY = coords[i + 1] + tileY;
-			var nextX = coords[i + 2] + tileX;
-			var nextY = coords[i + 3] + tileY;
-
-			// Adapted from https://github.com/craftyjs/Crafty/wiki/Crafty-FAQ-(draft)
-			Crafty.c(platformType, {
-				init: function() {
-					this.requires("2D, Canvas");
-					this.bind("Draw", this._draw_me);
-					this.ready = true;
-				},
-				_draw_me: function(e) {
-					var ctx = e.ctx;
-					ctx.lineWidth = 2;
-					ctx.strokeStyle = "green";  // FIXME: Change this to invisible after testing
-					ctx.beginPath();
-					ctx.moveTo(nextX, nextY);
-					ctx.stroke();
+		// Instantiate platforms
+		// Adapted from https://gist.github.com/BlackScorp/1560457
+		Crafty.c(platformType, {
+			init:function() {
+				var c = document.getElementById('PlatformHitBox');
+				if(!c){
+					c = document.createElement("canvas");
+					c.id = 'PlatformHitBox';
+					c.width = Crafty.viewport.width - 100;
+					c.height = Crafty.viewport.height - 100;
+					c.style.position = 'absolute';
+					c.style.left = '50px';
+					c.style.top = '50px';
+					c.style.zIndex = '0';  // FIXME change to 1000
+					Crafty.stage.elem.appendChild(c);
 				}
-			});
+                this.requires("Collision").bind("EnterFrame", function(){
+                    var ctx = c.getContext('2d');
+                    ctx.beginPath();
+                    for(i = 0; i < coords.length - 1; i += 2)
+                    {
+                        var thisX = Number(coords[i]) + tileX;
+                        var thisY = Number(coords[i + 1]) + tileY;
 
-			// Instantiate platform
-			Crafty.e(platformType).attr({x: thisX, y: thisY, w: 2, h: 2});
-			console.log('Adding platform at ');
-			console.log(thisX);
-			console.log(thisY);
-		}
+                        console.log('Adding platform:');
+                        console.log('thisX and thisY: ', thisX, ', ', thisY);
+                        console.log('polygon x and y: ', Number(coords[i]), ', ', Number(coords[i + 1]));
+                        console.log('tile x and y: ', tileX, ', ', tileY);
+                        ctx.lineTo(Crafty.viewport.x + thisX, Crafty.viewport.y + thisY)
+                    }
+                    ctx.closePath();
+                    ctx.fillStyle = 'blue'; // FIXME remove
+                    ctx.fill();
+                });
+				return this;
+            }
+		});
 	}
 }
