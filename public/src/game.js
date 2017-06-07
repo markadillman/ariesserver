@@ -430,7 +430,7 @@ function loadPlayer() {
 	}
 	
 	// Player sprite
-	var player = Crafty.e('Player, 2D, Canvas, Color, Multiway, Jumper, Gravity')
+	var player = Crafty.e('Player, 2D, Canvas, Color, Multiway, Jumper, Gravity, Collision')
 		
 		// Initial position and size
 		// inside the hole in the tree
@@ -1070,4 +1070,85 @@ function doEnterButton() {
 	// enter the world
 	Crafty.enterScene('World');
 }
+<<<<<<< Updated upstream
 // end Toni's code
+=======
+// end Toni's code
+
+// SVG-to-platform helper function
+function buildSurfacesFromSVG(svg, tileX, tileY)
+{
+	// Append/prepend tags to get parser to play nice
+	svg = '<svg>' + svg + '</svg>';
+
+	// Create parser
+	var parser = new DOMParser();
+	svgXml = parser.parseFromString(svg, "text/xml");
+
+	// Find p (platform) strings
+	var pTags = svgXml.getElementsByTagName("polygon");
+
+	for(j = 0; j < pTags.length; j += 1)
+	{
+		console.log('ID: ' + pTags[j].getAttribute('id'));
+		console.log('Style: ' + pTags[j].getAttribute('style'));
+
+		// Get permeable platforms (red)
+		if(pTags[j].getAttribute('id').charAt(0) == "p" &&
+		   pTags[j].getAttribute('style').includes("stroke: red"))
+		{
+			var platformType = "Platform";
+		}
+
+		else if(pTags[j].getAttribute('id').charAt(0) == "p" &&
+			    pTags[j].getAttribute('style').includes("stroke: black"))
+		{
+			var platformType = "Platform";  // FIXME: Change to Wall
+		}
+		else
+		{
+			// Not a platform
+			console.log('Not a platform.');
+			continue;
+		}
+		console.log('Platform!');
+
+		var str = pTags[j].getAttribute('points');  // Raw coordinates string
+
+		// Get pairs in string
+		var coords = str.split(" ");  // Array of coordinates
+        console.log('Coords: ', coords);
+        var coordPairs = [];  // Array of arrays of coordinate pairs ([[1, 1], [12, 4]...], etc)
+        var xCoords = [];  // For width calculation
+        var yCoords = [];  // For height calculation
+        for(var i = 0; i < coords.length - 1; i += 2)
+        {
+            // Add pair of coords to array
+            coordPairs.push([Number(coords[i]), Number(coords[i + 1])]);
+            xCoords.push(Number(coords[i]));
+            yCoords.push(Number(coords[i + 1]));
+        }
+        console.log('Coord pairs: ', coordPairs);
+        console.log('x coords: ', xCoords);
+        console.log('y coords: ', yCoords);
+
+        // Mess with max and min because JavaScript is terrible
+        Array.prototype.max = function() {
+            return Math.max.apply(null, this);
+        };
+        Array.prototype.min = function() {
+            return Math.min.apply(null, this);
+        };
+
+		// Instantiate platform
+        var platform = Crafty.e("Platform, 2D, Collision")
+            .attr({x: xCoords[0], y: yCoords[0],
+                   w: xCoords.max() - xCoords.min(), h: yCoords.max() - yCoords.min()})
+            .collision(new Crafty.polygon(coordPairs));
+        console.log('Platform x: ', platform.x);
+        console.log('Platform y: ', platform.y);
+        console.log('Platform w: ', platform.w);
+        console.log('Platform h: ', platform.h);
+	}
+}
+>>>>>>> Stashed changes
