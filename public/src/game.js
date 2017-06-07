@@ -706,6 +706,12 @@ function assetRender(assets){
 			console.log(blobSvg);
 		}
 		img.src = url;
+
+		// Set up surfaces if this is the center tile
+        if(assets[asset]['xcoord'] == 0 && assets[asset]['ycoord'] == 0)
+        {
+            buildSurfacesFromSVG(assets[asset]['svg'], tempX, tempY);
+        }
 	}
 	// start Toni's code
 	// add the calls to update platforms and player here!
