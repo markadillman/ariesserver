@@ -1100,13 +1100,13 @@ function buildSurfacesFromSVG(svg, tileX, tileY)
 		if(pTags[j].getAttribute('id').charAt(0) == "p" &&
 		   pTags[j].getAttribute('style').includes("stroke: red"))
 		{
-			var platformType = "Platform";
+			var platformType = "Ladder";
 		}
 
 		else if(pTags[j].getAttribute('id').charAt(0) == "p" &&
 			    pTags[j].getAttribute('style').includes("stroke: black"))
 		{
-			var platformType = "Platform";  // FIXME: Change to Wall
+			var platformType = "Wall";
 		}
 		else
 		{
@@ -1122,41 +1122,50 @@ function buildSurfacesFromSVG(svg, tileX, tileY)
 		var coords = str.split(" ");  // Array of coordinates
 
 		// Instantiate platforms
-		// Adapted from https://gist.github.com/BlackScorp/1560457
-		Crafty.c(platformType, {
-			init:function() {
-				var c = document.getElementById('PlatformHitBox');
-				if(!c){
-					c = document.createElement("canvas");
-					c.id = 'PlatformHitBox';
-					c.width = Crafty.viewport.width - 100;
-					c.height = Crafty.viewport.height - 100;
-					c.style.position = 'absolute';
-					c.style.left = '50px';
-					c.style.top = '50px';
-					c.style.zIndex = '0';  // FIXME change to 1000
-					Crafty.stage.elem.appendChild(c);
-				}
-                this.requires("Collision").bind("EnterFrame", function(){
-                    var ctx = c.getContext('2d');
+        if(platformType == 'Wall')
+        {
+            Crafty.c("Wall", {
+                init: function() {
+                    this.requires("2D, Canvas");
+                    this.bind("Draw", this._draw_me);
+                    this.ready = true;
+                },
+                _draw_me: function(e) {
+                    var ctx = e.ctx;
+                    ctx.lineWidth = 1;
+                    ctx.strokeStyle = "black";
                     ctx.beginPath();
-                    for(i = 0; i < coords.length - 1; i += 2)
-                    {
-                        var thisX = Number(coords[i]) + tileX;
-                        var thisY = Number(coords[i + 1]) + tileY;
-
-                        console.log('Adding platform:');
-                        console.log('thisX and thisY: ', thisX, ', ', thisY);
-                        console.log('polygon x and y: ', Number(coords[i]), ', ', Number(coords[i + 1]));
-                        console.log('tile x and y: ', tileX, ', ', tileY);
-                        ctx.lineTo(Crafty.viewport.x + thisX, Crafty.viewport.y + thisY)
+                    ctx.moveTo(coords[0], coords[1]);
+                    for (var i = 2; i < coords.length-1; i += 2) {
+                        ctx.lineTo(coords[i], coords[i+1]);
                     }
-                    ctx.closePath();
-                    ctx.fillStyle = 'blue'; // FIXME remove
-                    ctx.fill();
-                });
-				return this;
-            }
-		});
+                    ctx.stroke();
+                }
+            });
+        }
+        else
+        {
+            Crafty.c("Ladder", {
+                init: function() {
+                    this.requires("2D, Canvas");
+                    this.bind("Draw", this._draw_me);
+                    this.ready = true;
+                },
+                _draw_me: function(e) {
+                    var ctx = e.ctx;
+                    ctx.lineWidth = 1;
+                    ctx.strokeStyle = "red";
+                    ctx.beginPath();
+                    ctx.moveTo(coords[0], coords[1]);
+                    for (var i = 2; i < coords.length-1; i += 2) {
+                        ctx.lineTo(coords[i], coords[i+1]);
+                    }
+                    ctx.stroke();
+                }
+            });
+        }
+
+        Crafty.e(platformType + ', Platform, 2D, Canvas')
+            .attr({x: coords[i], y: coords[i + 1], w: tileWidth, h: tileHeight});
 	}
 }
