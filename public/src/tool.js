@@ -20,7 +20,7 @@ These chunks are tagged with the phrase "Mark's code" in comments.
 /* CODE FROM HTML PORTION */
 
 var debugging = true;	// toggle debug messages
-var verboseDebugging = false; // toggle verbose debugging messages
+var verboseDebugging = true; // toggle verbose debugging messages
 var useFakeSurroundings = false; // surroundings are colored boxes (for debugging)
 var playing = false;	// flag set to true when player is in Crafty World scene
 var artMode = "art";	// mode strings
@@ -105,6 +105,28 @@ var myFileInput;		// HTML input element for handling files
 var svgPrepend = "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" width=\"600\" height=\"350\" viewBox=\"0 0 600 350\">  <clipPath id=\"avatarClipPath\"><ellipse cx=\"300\" cy=\"175\" rx=\"87\" ry=\"174\"></ellipse></clipPath> <rect width=\"600\" height=\"350\" fill=\"white\"></rect>";
 var svgMinPrepend = "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"> <clipPath id=\"avatarClipPath\"><ellipse cx=\"300\" cy=\"175\" rx=\"87\" ry=\"174\"></ellipse></clipPath>";
 var svgAppend = "</svg>";
+//this variable tracks whether password reprompt at edit submit is necessary
+var passwordReprompt = false;
+const passwordReenterPrompt = "Please re-enter your tile's password to submit your edits.";
+//this will contain references to all specific button event listeners
+var eventListenerMsgBtnOK;
+var eventListenerMsgBtnCancel;
+var eventListenerPwdBtnOk;
+var eventListenerPwdBtnSkip;
+var eventListenerPwdBtnCancel;
+var eventListenerPwdBtnPublic;
+//this will allow removal of unknown, dynamic event listeners, 
+//adapted from code at http://stackoverflow.com/questions/8841138/remove-event-listener-in-java
+//credit to SO user TERMtm
+HTMLElement.prototype.eventListener = function(type, func, capture){
+	//a single object argument possessing the event listener will now remove that event listener
+	if(typeof arguments[0]== "object" && (!arguments[0].nodeType)){
+		return this.removeEventListener.apply(this,arguments[0]);
+	}
+	//regular add function
+	this.addEventListener(type,func,capture);
+	return arguments;
+}
 // end Mark's code
 
 // stop event propagation so forms don't actually submit
@@ -119,7 +141,7 @@ function parseKeyHTML(evt) {
 	//console.log(keyID);
 
 	// handle toggling help screen no matter what mode
-	if (keyID == 72) { // h key
+	if (keyID == 72 && messageDiv.style.display != "block") { // h key
 		if (debugging) {
 			console.log("HTML document caught an h keypress.");
 		}
@@ -347,8 +369,7 @@ function initHTML() {
 			localStorage.hello = "world";
 			localStorage.myAvatarCount = 0;
 			localStorage.myAvatars = JSON.stringify({});
-			localStorage.myTeleporterCount = 0;
-			localStorage.myTeleporters = JSON.stringify({});
+			localStorage.teleportMarkers = JSON.stringify({});
 			// debug message
 			if (debugging) {
 				console.log("Set up localStorage for the first time in this browser.");
@@ -440,6 +461,8 @@ function initHTML() {
 
 	// set the background color for the message div
 	document.getElementById("messageFormatDiv").style.backgroundColor = bgroundColor;
+	//MARK ADDED THIS to get the background color of the set password div to display
+	document.getElementById("passwordFormatDiv").style.backgroundColor = bgroundColor;
 	
 	// set the default visibility of the message box div
 	messageDiv.style.display = "none";
@@ -692,31 +715,94 @@ function doQuitToHomeScreen() {
 // links up the ok and cancel functions
 // also displays text input element if boolean argument is true
 // these functions should include: messageDiv.style.display = "none";
-function displayMessage(msg, okFn, cancelFn, useTextInput, hideCancelButton) {
-	// set given info
+function displayMessage(msg, okFn, cancelFn, useTextInput, hideCancelButton, defaultText, textInputPassword, initCoords) {
+	//remove previous event listeners so that they do not aggregate to multiple per push
+	removeEventListeners();
 	messageText.innerHTML = msg;
-	msgBtnOK.onclick = okFn;
-	msgBtnCancel.onclick = cancelFn;
-	
+	//updated so all anonymous functions should also remove themselves as event listeners
+	if (initCoords&&textInputPassword){
+		//this works because the truthiness of strings in Javascriprt. Both true and defined.
+		eventListenerMsgBtnOK = msgBtnOK.addEventListener('click',function clicked1(){
+			this.removeEventListener("click",clicked1, false);
+			okFn(initCoords.xcoord,initCoords.ycoord,textInputPassword);
+		},false); 
+		eventListenerMsgBtnCancel = msgBtnCancel.addEventListener('click',function clicked2(){
+			this.removeEventListener("click",clicked2,false);
+			cancelFn();
+		},false);
+	}
+	else if (initCoords) {
+		eventListenerMsgBtnOK = msgBtnOK.addEventListener('click',function clicked1(){
+			this.removeEventListener("click",clicked1, false);
+			okFn(initCoords.xcoord,initCoords.ycoord);
+		},false);
+		eventListenerMsgBtnCancel = msgBtnCancel.addEventListener('click',function clicked2(){
+			this.removeEventListener("click",clicked2,false);
+			cancelFn();
+		},false);
+	}
+	else
+	{
+		eventListenerMsgBtnOK = msgBtnOK.addEventListener('click',function clicked1(){
+			this.removeEventListener("click",clicked1,false);
+			okFn(); 
+		},false);
+		eventListenerMsgBtnCancel = msgBtnCancel.addEventListener('click',function clicked2(){
+			this.removeEventListener("click",clicked2,false);
+			cancelFn();
+		},false);
+	}
 	// use or hide text input element
 	if (useTextInput) { // show the text input element
-		msgTextInput.style.display = "block";
+		//SET THE DEFAULT VALUE TO defaultText if truthy
+		if (useTextInput){
+			if (defaultText){
+				msgTextInput.value = defaultText;
+			}
+		}
+		if (textInputPassword === true){
+			if (verboseDebugging){
+				console.log("turning this field dadgum password, tell yu whut.");
+			}
+			//must be reverted in the ok and cancel functions. Reverts on refresh.
+			msgTextInput.type = "password";
+			msgTextInput.style.display = "block";
+		} else {
+			msgTextInput.type = "text";
+			msgTextInput.style.display = "block";
+		}
 	} else { // hide it
 		msgTextInput.style.display = "none";
 	}
-	messageDiv.style.display = "block";
-	
+	messageDiv.style.display = "block";	
 	// use or hide cancel button
 	if (hideCancelButton) { // hide the button
 		msgBtnCancel.style.display = "none";
 	} else { // show the button
 		msgBtnCancel.style.display = "block";
 	}
-	
 	// debug message
 	if (debugging) {
 		console.log("Displayed a message.");
 	}
+}
+
+//MARK ADDED: This is a way to remove all event listeners from all buttons. This should be done
+//every time on the first line of displayMessage or displayPassword to avoid eventListeners from
+//accumulating. Somewhat redundant with the new self-removing functions above.
+function removeEventListeners(){
+	var pwdBtnOK = document.getElementById('pwdBtnOK');
+	var pwdBtnSkip = document.getElementById('pwdBtnSkip');
+	var pwdBtnPublic = document.getElementById('pwdBtnPublic');
+	var pwdBtnCancel = document.getElementById('pwdBtnCancel');
+	//all nodes are gathered in reference-able variables. Now use the prototype that tracks them
+	//to remove all the event listeners regardless of what they are or what args they have.
+	msgBtnOK.eventListener(eventListenerMsgBtnOK);
+	msgBtnCancel.eventListener(eventListenerMsgBtnCancel);
+	pwdBtnOK.eventListener(eventListenerPwdBtnOk);
+	pwdBtnSkip.eventListener(eventListenerPwdBtnSkip);
+	pwdBtnCancel.eventListener(eventListenerPwdBtnCancel);
+	pwdBtnPublic.eventListener(eventListenerPwdBtnPublic);
 }
 
 // default handlers for message box buttons
@@ -741,7 +827,7 @@ function hardReload() {
 
 // control button handlers
 function saveButton() {
-	displayMessage("Enter a name for your saved art file.", svgSaveToLocal, doNothing, true, false);
+	displayMessage("Enter a name for your saved art file.", svgSaveToLocal, doNothing, true, false,"art.svg");
 }
 function loadButton () {
 	displayMessage("Use the dialog to select an art file to load.", svgLoadFromLocal, doNothing, false, false);
@@ -771,14 +857,19 @@ function submitAvatarButton() {
 	displayMessage("Your avatar has been stored.", doAvatarExit, doAvatarExit, false, true)
 }
 function submitTileButton () {
-	// make sure to toggle off platform editing mode if necessary
-	if (masking) {
-		changeMasking(false);
+	// check to make sure there is platform data
+	if (currentPlatform == 1) {
+		// no platforms, put up message and don't submit
+		displayMessage("You must draw at least one platform before submitting your art.", doNothing, doNothing, false, true);
+	} else { // at least 1 platform, so submit	
+		// make sure to toggle off platform editing mode if necessary
+		if (masking) {
+			changeMasking(false);
+		}
+		// ### Mark - why does this submit hiddenCanvas, especially without updating it first?
+		// and yet this seems to work... maybe I'm just tired and not following what's going on
+		svgSubmitToServer(document.getElementById('hiddenCanvas'));
 	}
-	
-	// ### Mark - why does this submit hiddenCanvas, especially without updating it first?
-	// and yet this seems to work... maybe I'm just tired and not following what's going on
-	svgSubmitToServer(document.getElementById('hiddenCanvas'));
 }
 function undoButton() {
 	svgUndoAction();
@@ -859,7 +950,7 @@ function doAvatarEdit(myAvatarString) {
 	// set the submit/done button's function
 	document.getElementById("artSubmitBtn").onclick = submitAvatarButton;
 
-	// get the offsets again here
+	// get the offsets here insetad because these scripts ran in the
 	var coords = canvas.getBoundingClientRect();
 	xOffset = coords.left;
 	yOffset = coords.top;
@@ -903,26 +994,141 @@ function doAvatarExit() {
 	toggleButtonsOnNew();
 }
 
-// switches from game mode into tile edit mode
-// if the player has access to the current tile
-// Mark had to add args
-function doTileEdit(currentX, currentY) {
-
-	// make sure xTile and yTile are set correctly
-	if (currentX && currentY) {
-		xTile = currentX;
-		yTile = currentY;
+//MARK'S PASSWORD AND EDIT CHECK CODE STARTS HERE
+//helper functions to the below password check. Mainly involve POSTing
+//tile and password data.
+//Request functions:
+//callback function should return status code indicating if there is a pw
+//or not on an editable tile, or if tile is uneditable.
+function tileEditRequest(xTile,yTile){
+	if (verboseDebugging){
+		console.log("x,y");
+		console.log(xTile);
+		console.log(yTile);
 	}
-	
-	// ### Mark - do tile lockout and password check stuff here
-	
-	
+	var payload = {};
+	payload.xcoord = xTile;
+	payload.ycoord = yTile;
+	postRequest('/editcheck',payload,tileEditCallback,postOnError);
+}
+
+/*Tile edit callback has four possible request status responses as
+  a precondition: 224, for a fresh, unedited tile (not in database)
+  233 to initiate password prompt, 242 for edit deny (tile being edited).
+  Request body has structure: {xcoord:x,ycoord:y,<message:m>}
+*/
+function tileEditCallback(request){
+	//if the response is green-lighted (224), return it to commence with do edit
+	var body = JSON.parse(request.responseText);
+	if (verboseDebugging)
+	{
+		console.log("TILE EDIT CALLBACK STATUS: ");
+		console.log(request.status);
+		console.log("BODY");
+		console.log(body);
+	}
+	if (request.status === 224){
+		if (verboseDebugging){
+			console.log("Edit authorization success.");
+			passwordApproved(body.xcoord,body.ycoord,'');
+		}
+		return request.status;
+	}
+	else if (request.status === 242){
+		if (verboseDebugging){
+			console.log("Edit authorization failed: Currently being edited.");
+		}
+		displayMessage(body.message,doTileExitNoFree,doTileExitNoFree,false,false);
+		return request.status;
+	}
+	else if (request.status === 233){
+		if (verboseDebugging){
+			console.log("Password set. Proceeding to password enter procedure.");
+		}
+		//build parameter object for submit so that client can tell server what coordinates
+		//the password they entered goes to:
+		var args = {};
+		args.xcoord = body.xcoord;
+		args.ycoord = body.ycoord;
+		//both of the button functions contain ways of returning text field to normal
+		displayMessage(body.message,passwordSubmit,doTileExitNoFree,true,false,false,true,args);
+	}
+}
+
+//this proceeds the function above, gathering the password data and sending it to the server
+//the coordinates are optionally passed in case it is called from a non-callback context.
+function passwordSubmit(xcoord,ycoord){
+	var payload = {};
+	//gather password
+	var field = document.getElementById('msgTextInput');
+	payload.pw = field.value;
+	payload.x = xcoord;
+	payload.y = ycoord;
+	if (verboseDebugging){
+		console.log("submittin what'n i think is the passwort");
+		console.log(payload);
+	}
+	postRequest('/pwcheck',payload,passwordResponse,postOnError,payload.pw);
+}
+
+//this will either get an OK to edit the tile or a denial, which displays a new password prompt
+//then loops back to the function above. Data should include {xcoord:x,ycoord:y}
+function passwordResponse(request,pw,initCoords){
+	if (verboseDebugging){
+		console.log("we're inna passwud respornse");
+		console.log("response obj:");
+		console.log(request.responseText);
+	}
+	var body = JSON.parse(request.responseText);
+	//if someone is now editing the tile, you must go back to game mode
+	if (request.status === 242){
+		if (verboseDebugging){
+			console.log("Edit authorization failed: Currently being edited.");
+		}
+
+		displayMessage(body.message,doTileExitNoFree,doTileExitNoFree,false,true,false);
+		return request.status;
+	}
+	//299 is code for incorrect password
+	else if (request.status === 299){
+		if (verboseDebugging){
+			console.log("Password incorrect.");
+		}
+		var repromptPassword = "Password incorrect " + body.message;
+		var initCoords = {};
+		initCoords.xcoord = body.xcoord;
+		initCoords.ycoord = body.ycoord;
+		//
+		displayMessage(repromptPassword,passwordSubmit,doTileExitNoFree,true,false,false,true,initCoords);
+	}
+	//else password is confirmed.
+	else if (request.status === 224){
+		if (verboseDebugging){
+			console.log("Password correct. Moving to edit.");
+		}
+		passwordReprompt = true;
+		passwordApproved(body.xcoord,body.ycoord,pw);
+	}
+}
+
+//this last helper function condenses transition between password and setting up art tool
+//which allows to be neatly called in password success callbacks at various stages.
+function passwordApproved(xTile,yTile,password){
 	// clear out everything from drawing area just in case
+	messageDiv.style.display = "none";
 	svgClearAll();
-	
-	// load the tile and its surroundings from the server
+	if (verboseDebugging){
+		console.log("in pw approved");
+		console.log("x,y,pw");
+		console.log(xTile);
+		console.log(yTile);
+		console.log(password);
+	}
+
 	svgLoadFromServer(xTile, yTile, password);
+
 	doLoadSurroundingsFromServer();
+	
 	
 	// set the mode
 	previousMode = mode;
@@ -948,10 +1154,128 @@ function doTileEdit(currentX, currentY) {
 	}
 }
 
+// switches from game mode into tile edit mode
+// if the player has access to the current tile
+// Mark had to add args
+function doTileEdit(currentX, currentY) {
+	// make sure xTile and yTile are set correctly
+	if (currentX && currentY) {
+		xTile = currentX;
+		yTile = currentY;
+	}
+	
+	// ### Mark - do tile lockout and password check stuff here
+		/*  The logic flows from general to specific according to info required from the client.
+		First case, the tile has never been edited (not in database) or the tile is being
+		edited (which can only be done by one client at a time, regardless of ownership).
+		If the tile is not owned or owned but no password is set, continue to the editor.
+		Else, prompt to enter the password. If the server returns that the password does not
+		match, say so, repeat, or cancel and make message div invisible and return to gameplay.
+	*/
+	tileEditRequest(xTile,yTile);
+	
+	// clear out everything from drawing area just in case
+	/*svgClearAll();
+	
+	// load the tile and its surroundings from the server
+	svgLoadFromServer(xTile, yTile, password);
+	doLoadSurroundingsFromServer();
+	
+	// set the mode
+	previousMode = mode;
+	mode = artMode;
+	avatarEditing = false;
+
+	// display correct divs and header
+	maskingToggleDiv.style.display = "block";
+	pageHeader.innerHTML = drawingHeader;
+	showDiv(mode);
+
+	// set the submit button's function
+	document.getElementById("artSubmitBtn").onclick = submitTileButton;
+
+	// get the offsets again here
+	var coords = canvas.getBoundingClientRect();
+	xOffset = coords.left;
+	yOffset = coords.top;
+	
+	// debug message
+	if (debugging) {
+		console.log("Loaded editor for tile (" + xTile.toString() + ", " + yTile.toString() + ").");
+	}*/
+}
+
 // exits from the currently edited tile back into game mode
 // does not save the current edits!
 function doTileExit() {
+	if (verboseDebugging){
+		console.log("in doTileExit debugging");
+		console.log("this is good");
+	}
+	messageDiv.style.display = "none";
+	passwordDiv.style.display = "none";
+
+	//make sure to return repromptPassword flag to default if changes
+	repromptPassword = false;
+
+	//send a request to free up the tile for editing again
+	var payload = {};
+	payload.xcoord = xTile;
+	payload.ycoord = yTile;
+	if (verboseDebugging){
+		console.log("Payload to freetile");
+		console.log(payload);
+	}
+	postRequest('/freetile',payload,exitCallback,postOnError);
+}
+
+// exits from the currently edited tile back into game mode
+// does not save the current edits! Save as above but no free
+// because edit wasnt set. Mainly used for cancels so that people
+// cannot use a cancel to steal a tile before they gain edit access
+// if someone else is editing.
+function doTileExitNoFree() {
+	if (verboseDebugging){
+		console.log("in doTileExit debugging");
+		console.log("this is good");
+	}
+	messageDiv.style.display = "none";
+	passwordDiv.style.display = "none";
+
+	//make sure to return repromptPassword flag to default if changes
+	repromptPassword = false;
+
+	//send a request to free up the tile for editing again
+	var payload = {};
+	payload.xcoord = xTile;
+	payload.ycoord = yTile;
+	if (verboseDebugging){
+		console.log("Payload to freetile");
+		console.log(payload);
+	}
+	// clear out all the current SVG
+	svgClearAll();
 	
+	// reset drawing tool defaults
+	svgResetDefaults();
+	
+	// set the mode
+	previousMode = mode;
+	mode = gameMode;
+
+	// display correct div
+	showDiv(mode); // handles hiding message box div
+	
+	// debug message
+	if (debugging) {
+		console.log("Exited tile editing screen.");
+	}
+	
+	// make crafty reload the art assets for this tile
+	initAssetRequest(xTile, yTile);
+}
+
+function exitCallback(request){
 	// clear out all the current SVG
 	svgClearAll();
 	
@@ -1151,7 +1475,7 @@ function surroundingEyeDropper(evt) {
 
 var xTile = 0;					// x-coord of tile
 var yTile = 0;					// y-coord of tile
-var password = "12345";			// user-entered password string for tile
+//var password = "12345";			// user-entered password string for tile //MARK commented this out
 var svgFileHeader = "<!--FROM THE BLANK--\>";	// for generated files
 var loadingPage = true;			// flag to mark initial page loading
 var masking = false;			// toggle the platform masking tools
@@ -1277,7 +1601,7 @@ function initSVG(evt) {
 	canvas.addEventListener("wheel", scrollWheel);
 
 	// load data from the server
-	svgLoadFromServer(xTile, yTile, password);
+	//svgLoadFromServer(xTile, yTile);
 	
 	// debug message
 	if (debugging) {
@@ -1319,15 +1643,26 @@ function generateSurroundingsPayload(){
 }
 
 //KEEP: HELPER FUNCTION : args url to post, payload as Object, onload function, error function
-function postRequest(url,payload,onload,error){
+function postRequest(url,payload,onload,error,passwordSubmit){
+	var reqStatus;
 	var request = new XMLHttpRequest();
 	request.open("POST",url,true);
 	request.setRequestHeader('Content-Type','application/json; charset=UTF-8');
 	//request.responseType = "json";
 	request.onload = function(){
 		if (request.readyState === 4){
-			if (request.status === 200 || request.status === 242) {
-				onload(request);
+			    //200: General OK ;       224: Tile not previously edited
+			if (request.status === 200 || request.status === 224 ||
+				//233: Tile has password; 242: Tile being edited currently
+			    request.status === 233 || request.status === 242 ||
+			    //299: Password is incorrect:
+			    request.status === 299) {
+				if (passwordSubmit){
+					onload(request,passwordSubmit);
+				}
+				else {
+					onload(request);
+				}
 			} else {
 				console.error(request.statusText);
 				error(request);
@@ -1338,11 +1673,6 @@ function postRequest(url,payload,onload,error){
 		error(request);
 	};
 	request.send(JSON.stringify(payload));
-	
-	// debug message
-	if (debugging) {
-		console.log("Posted a request to the server.");
-	}
 }
 //KEEP: HELPER FUNCTION: request error helper
 function postOnError(request){
@@ -1668,35 +1998,339 @@ function svgLoadFromLocal() {
 	myFileInput.click();
 }
 
-// start Mark's code
+// START MARK'S EDIT SUBMIT CODE
 //HELPER CALLBACK FUNCTION TO SERVER SUBMIT
-function editSubmitCallback(request){
+function editSubmitCallback(request,pw){
+	if (verboseDebugging)
+	{
+		console.log("we in edit submit callback nao");
+		console.log("pw is:");
+		console.log(pw);
+	}
+	var body = JSON.parse(request.responseText);
+	tempXcoord = body.xcoord;
+	tempYcoord = body.ycoord;
 	if (request.readyState === 4){
 		if (request.status === 200) {
 			if (verboseDebugging) {
-				console.log(request.responseText);
+				console.log(request.responseText);					
+				// debug message
+				if (debugging) {
+					console.log("Submitted drawing and platform data to the server.");
+				}
+				//here is where the user is prompted for a new password
+				newPasswordPrompt(tempXcoord,tempYcoord,pw);
 			}
 		} else {
 			if (verboseDebugging) {
+				editError();
 				console.error(request.statusText);
 			}
 		}
 	}
 }
+
+//helper function that reprompts for password on submit. initCoords in
+//format: {xcoord:x,ycoord:y}
+function promptPWOnEdit(message,initCoords){
+	//prompt the user to reenter password
+	if (verboseDebugging){
+		console.log("password prompt message:");
+
+	}
+	displayMessage(message,editPWSubmit,removePrompt,true,false,false,true,initCoords);
+}
+
+function editPWSubmit(xcoord,ycoord){
+	var payload = {};
+	payload.pw = document.getElementById("msgTextInput").value;
+	payload.x = xcoord;
+	payload.y = ycoord;
+	if (verboseDebugging){
+		console.log("password check payload log");
+		console.log(payload);
+	}
+	postRequest('/finalpwcheck',payload,editPWResponse,postOnError,payload.pw);
+}
+
+//editPWResponse parses the possible outcomes of the password check and routes
+//appropriately
+function editPWResponse(request,pw){
+	var body = JSON.parse(request.responseText);
+	//299 is code for incorrect password
+	if (request.status === 299){
+		if (verboseDebugging){
+			console.log("Password incorrect.");
+		}
+		var repromptPassword = "Password incorrect " + body.message;
+		var initCoords = {};
+		initCoords.xcoord = body.xcoord;
+		initCoords.ycoord = body.ycoord;
+		initCoords.pw = pw;
+		//
+		displayMessage(repromptPassword,editPWSubmit,removePrompt,true,false,false,pw,initCoords);
+	}
+	//else password is confirmed. Note that 242 is success because tile is being edited.
+	else if (request.status === 224){
+		if (verboseDebugging){
+			console.log("Password correct. Moving to edit.");
+		}
+		passwordReprompt = false;
+		editPasswordApproved(body.xcoord,body.ycoord,pw);
+	}
+}
+
+//helper function for password submit cancel
+function removePrompt(){
+	messageDiv.style.display = "none";
+	passwordDiv.style.display = "none";
+}
+
+//newPasswordPrompt displays a messsage and handles a new password field
+function newPasswordPrompt(xcoord,ycoord,pw){
+	if (verboseDebugging){
+		console.log("we in new pw prompt nao");
+		console.log("pw is: ");
+		console.log(pw);
+	}
+	messageDiv.style.display = "none";
+	//Gather prompt arguments and pass them along to handler.
+	var initCoords = {};
+	initCoords.xcoord = xcoord;
+	initCoords.ycoord = ycoord;
+
+	//set up new prompt in HTML DOM. Make sure that defaults are reset.
+	displayPassword("If you wish to set a new password, enter it and confirm.\nIf you wish to keep the previous password, press Don't Change\nIf you wish to keep the tile public, press Make Public",
+					checkPasswordMatch,pw,initCoords);
+
+}
+
+//this is called first if new password is set
+function checkPasswordMatch(xcoord,ycoord,pw){
+	messageDiv.style.display = "none";
+	var firstPass = document.getElementById('firstPassword').value;
+	var secondPass = document.getElementById('secondPassword').value;
+	if (verboseDebugging){
+		console.log("first pass value:");
+		console.log(firstPass);
+		console.log("second pass value:");
+		console.log(secondPass);
+		console.log("pw arg:");
+		console.log(pw);
+	}
+	if (firstPass === secondPass){
+		submitNewPassword(xcoord,ycoord,pw,firstPass);
+	}
+	else {
+		var initCoords = {};
+		initCoords.xcoord = xcoord;
+		initCoords.ycoord = ycoord;
+		displayPassword("The passwords you entered did not match.\nIf you wish to set a new password, enter it and confirm.\nIf you wish to keep the previous password, press Don't Change\nIf you wish to keep the tile public, press Make Public"
+		   , checkPasswordMatch, pw ,initCoords);
+	}
+}
+
+//follows checkPasswordMatch if user chooses to set a new password, otherwise it is first
+function submitNewPassword(xcoord,ycoord,pw,newpw){
+	//construct the password payload
+	var payload = {};
+	payload.xcoord = xcoord;
+	payload.ycoord = ycoord;
+	if (!(pw===null) && !(pw===undefined)){
+			payload.pw = pw;
+	}
+	else {
+		payload.pw = '';
+	}
+	if (!(newpw===null) && !(newpw===undefined)){
+		payload.newpw = '';
+	}
+	payload.newpw = newpw;
+	postRequest('/pwset',payload,submitNewPwPost,postOnError);
+}
+
+function submitNewPwPost(request){
+	if (request.status < 400 || request.status > 599){
+		completeEdit();
+	}
+	else {
+		if (verboseDebugging){
+			console.error(request.status);
+			console.error(request.responseText);
+			pwUpdateError();
+		}
+	}
+}
+
+function completeEdit(){
+// use message box to put up confirmation message
+	passwordDiv.style.display = "none";
+	displayMessage("Your art has been added to the world.", doTileExit, doTileExit, false);
+}
+
+//companinon to complete edit, but informs of an error in edit submission.
+function editError(){
+	displayMessage("There has been an error submitting your art.\nSave your work locally and try again later.",
+		            removePrompt(),removePrompt(),false,false);
+}
+
+//this will inform that, due to a server error, no new password has been set. Edits still took.
+function pwUpdateError(){
+	displayMessage("There was an error updating the password. The previous\npassword will still be used to access the tile edit feature\nand any edits you have made have been saved. Try to reset\nthe password for this tile again later", removePrompt(),
+					removePrompt(),false,false);
+}
+
+// MARK ADDED:  borrowed from Tony's displayMessage but conformed for passwords and more buttons
+// textInputPassword is an optional field that can contain a boolean or a submitted password to
+// pass along to a response button function.
+// initCoords similarly are present only to pass along to event-driven subfunctions.
+// these functions should include: passwordDiv.style.display = "none";
+function displayPassword(msg, okFn, textInputPassword, initCoords) {
+	removeEventListeners();
+	messageDiv.style.display = "none";
+	var pwdBtnOK = document.getElementById('pwdBtnOK');
+	var pwdBtnCancel = document.getElementById('pwdBtnCancel');
+	var pwdBtnSkip = document.getElementById('pwdBtnSkip');
+	var pwdBtnPublic = document.getElementById('pwdBtnPublic');
+	var passwordSetText = document.getElementById('passwordSetText');
+	if (verboseDebugging){
+		console.log("this should be the old password");
+		console.log(textInputPassword);
+	}
+	passwordSetText.innerHTML = msg;
+	if (initCoords){
+		if (textInputPassword) {
+			//this works because the truthiness of strings in Javascriprt. Both true and defined.
+			pwdBtnOK.addEventListener('click',function clicked3(){
+				this.removeEventListener('click',clicked3,false);
+				okFn(initCoords.xcoord,initCoords.ycoord,textInputPassword);
+				},false); 
+		}
+		else 
+		{
+			pwdBtnOK.addEventListener('click',function clicked3(){
+				this.removeEventListener('click',clicked3,false);
+				okFn(initCoords.xcoord,initCoords.ycoord);
+			},false);
+		}
+		//if you cancel, you will go back to the editing screen
+		pwdBtnCancel.addEventListener('click',function clicked4(){
+			this.removeEventListener('click',clicked4,false);
+			removePrompt();
+			},false);
+		//if you want to keep the same password, you are done editing. back to gameplay.
+		pwdBtnSkip.addEventListener('click',function clicked5(){
+			this.removeEventListener('click',clicked5,false);
+			completeEdit();
+			},false); 
+		//if you want to keep public, explicitly set password to ""
+		pwdBtnPublic.addEventListener('click',function clicked6(){
+			if (verboseDebugging){
+				console.log("pwdBtnPublic pressed");
+			}
+			this.removeEventListener('click',clicked6,false);
+			passwordDiv.style.display = "none";
+			//no pw argument will auto 
+			submitNewPassword(initCoords.xcoord,initCoords.ycoord,textInputPassword,null);
+			},false);
+	} else {
+		//should never get here but must be present to remove a borked event listener
+		msgBtnOK.addEventListener('click',function clicked3(){
+			this.removeEventListener('click',clicked3,false);
+			},false);
+		msgBtnCancel.addEventListener('click',function clicked4(){
+			this.removeEventListener('click',clicked4,false);
+			removePrompt();
+			},false);
+		pwdBtnSkip.addEventListener('click',function clicked5(){
+			this.removeEventListener('click',clicked5,false);
+			completeEdit();
+			},false);
+		pwdBtnPublic.addEventListener('click',function clicked6(){
+			passwordDiv.style.display = "none";
+			this.removeEventListener('click',clicked5,false);
+			},false);
+	}
+	passwordDiv.style.display = "block";
+}
+
+//helper funciton that asks the user if they wish to change the password
+function editPasswordApproved(xcoord,ycoord,pw){
+	if (verboseDebugging){
+		console.log("we edit pw approved nao");
+		console.log("pw is:");
+		console.log(pw);
+	}
+	var payload = {};
+	if (xcoord && ycoord)
+	{
+		payload["xcoord"] = xcoord;
+		payload["ycoord"] = ycoord;
+	}
+	else {
+		payload["xcoord"] = xTile;
+		payload["ycoord"] = yTile;
+	}
+	//release the edit block on this tile via the query
+	payload["isBeingEdited"] = false;
+	//password is used as query field. No-leak pw check. Cannot bypass PW with POSTman to /edit
+	if (pw) {
+		if (verboseDebugging){
+			console.log("had a password.");
+		}
+		payload.pw = pw;
+	}
+	else {
+		payload["pw"] = '';
+	}
+	//add svg to payload
+	payload["svg"] = svgMinPrepend + artToString() + platformToString() + svgAppend;
+	if (verboseDebugging){
+		console.log("Paylaod to server");
+		console.log(payload);
+	}
+	if (verboseDebugging){
+		console.log("pw in the payload is:");
+		console.log(payload.pw);
+	}
+	//send various payloads. In further functions, the second request call will be
+	//adjusted to check for the default (public) password.
+	if (pw){
+		postRequest("/edit",payload,editSubmitCallback,postOnError,pw);
+	}
+	else {
+		postRequest("/edit",payload,editSubmitCallback,postOnError);
+	}
+}
 // end Mark's code
+
 
 // submit drawing and platform data to server
 function svgSubmitToServer(imgCanvas) {
 	handleShapeInProgress();
 	
-	// start Mark's code
+	// BELOW CODE MOVED TO HELPER FUNCTION ABOVE start Mark's code
 	//form payload request
-	var payload = {};
+	//var payload = {};
 	//fill out coordinate fields
-	payload["xcoord"] = xTile;
-	payload["ycoord"] = yTile;
+	//payload["xcoord"] = xTile;
+	//payload["ycoord"] = yTile;
 	// ### TO CHANGE: EVERYTHING CURRENTLY HAS NO PASSWORD
-	payload["pw"] = '';
+	//if reprompt password flag is set, ask user to re-enter password
+	console.log("reprompt at submission:");
+	console.log(passwordReprompt);
+	if (passwordReprompt){
+		//takes care of refreshing the prompt, etc. If fail once, add to message.
+		var initCoords = {};
+		initCoords.xcoord  = xTile;
+		initCoords.ycoord = yTile;
+		promptPWOnEdit(passwordReenterPrompt,initCoords);
+	}
+	else {
+		editPasswordApproved(xTile,yTile);
+	}
+	//below commented code is moved to helper function directly above
+	/*payload["pw"] = '';
 	//add svg to payload
 	payload["svg"] = svgMinPrepend + artToString() + platformToString() + svgAppend;
 	if (verboseDebugging){
@@ -1712,18 +2346,41 @@ function svgSubmitToServer(imgCanvas) {
 	}
 	
 	// use message box to put up confirmation message
-	displayMessage("Your art has been added to the world.", doTileExit, doTileExit, false, true)
+	displayMessage("Your art has been added to the world.", doTileExit, doTileExit, false, true)*/
 }
 
 // start Mark's code
 //HELPER FUNCTION TO HANDLE CALLBACK FROM SERVER LOAD
 function svgPullCallback(request){
+	//TONI'S BLOCK: MOVED DUE TO ASYNCH CALLBACK
+	
+	// debug message
+	if (debugging) {
+		console.log("Loaded drawing and platform data for tile (" + xTile + ", " + yTile + ") from the server.");
+	}
+	
+	// hide message box if not in the process of loading the page the first time
+	if (!loadingPage) {
+		messageDiv.style.display = "none";
+	}
 	//if response is received and in good order
 	if (request.readyState === 4){
 		if (request.status === 200){
-			body = JSON.parse(request.responseText);
+			//trim the array brackets off of the response body here:
+			//trim open square bracket
+			var properParseText = request.responseText.substring(1);
+			//trim close square bracket
+			properParseText = properParseText.substring(0,properParseText.length-1);
+			if (verboseDebugging) {
+				console.log("this being parsed:");
+				console.log(properParseText);
+			}
+			body = JSON.parse(properParseText);
 			if (verboseDebugging){
-				console.log(body.svg);
+				console.log("raw request in pull callback:");
+				console.log(request);
+				console.log("Edit tile response body.");
+				console.log(body);
 			}
 			//load SVG into editable SVG region
 			//must do away with any drawingGroup and platformsGroup higher in DOM
@@ -1751,15 +2408,17 @@ function svgPullCallback(request){
 				console.log("Working String:");
 				console.log(body.svg);
 			}
-			var parseString = svgMinPrepend + body.svg + svgAppend;
-			/*var parser = new DOMParser();
-			var xmlDoc = parser.parseFromString(parseString,"text/xml");
-			var dg = xmlDoc.getElementById("drawingGroup");
-			var pg = xmlDoc.getElementById("platformsGroup");
-			console.log(dg);
-			console.log(pg);*/
-			svgLoadFromString(parseString);
 
+			if (body.svg){
+				var parseString = svgMinPrepend + body.svg + svgAppend;
+				/*var parser = new DOMParser();
+				var xmlDoc = parser.parseFromString(parseString,"text/xml");
+				var dg = xmlDoc.getElementById("drawingGroup");
+				var pg = xmlDoc.getElementById("platformsGroup");
+				console.log(dg);
+				console.log(pg);*/
+				svgLoadFromString(parseString);
+			}
 		} else if (request.status === 242){
 			if (verboseDebugging) {
 				console.log("fresh tile.");
@@ -1776,7 +2435,12 @@ function svgPullCallback(request){
 // load drawing and platform data from the server
 // call this from the svg init function
 // and from doTileEdit
-function svgLoadFromServer(xTile, yTile, password) {
+function svgLoadFromServer(xTile, yTile, password, callback) {
+	if (verboseDebugging)
+	{
+		console.log("password pre retrieve");
+		console.log(password);
+	}
 	handleShapeInProgress();
 	svgClearAll();
 
@@ -1786,18 +2450,24 @@ function svgLoadFromServer(xTile, yTile, password) {
 	payload["xcoord"] = xTile;
 	payload["ycoord"] = yTile;
 	// ### TO CHANGE: EVERYTHING CURRENTLY HAS NO PASSWORD
-	payload["pw"] = '';
-	postRequest("/retrieve",payload,svgPullCallback,postOnError);
-	// end Mark's code
-	
-	// debug message
-	if (debugging) {
-		console.log("Loaded drawing and platform data for tile (" + xTile + ", " + yTile + ") from the server.");
+	if (password){
+		payload["pw"] = password;
 	}
-	
-	// hide message box if not in the process of loading the page the first time
-	if (!loadingPage) {
-		messageDiv.style.display = "none";
+	else {
+		payload["pw"] = '';
+	}
+	if (verboseDebugging){
+		console.log("payload for retrieve:");
+		console.log(payload);
+	}
+	if (callback)
+	{
+		postRequest("/retrieve",payload,callback,postOnError);
+
+	} else {
+
+		postRequest("/retrieve",payload,svgPullCallback,postOnError);
+
 	}
 }
 
@@ -1867,7 +2537,7 @@ function handleShapeInProgress() {
 			case 2: // polygon
 				// clean up a partly-completed polygon by leaving it a polyline
 
-				// get the current shape and its info, including the marker
+				// get the current shape and its info, including the markers
 				var newPolyline = document.getElementById(objectStr + currentObject.toString());
 				var pointString = newPolyline.getAttribute("points");
 				var numPoints = pointString.split(" ").length-1;
@@ -1960,7 +2630,7 @@ function handleShapeInProgress() {
 
 			case 4: // eraser
 
-				// get the current eraser stroke and its info
+				/*// get the current eraser stroke and its info
 				var eraserObj = document.getElementById(objectStr + currentObject.toString());
 				var pointString = eraserObj.getAttribute("points");
 				var numPoints = pointString.split(" ").length-1;
@@ -1997,7 +2667,7 @@ function handleShapeInProgress() {
 				
 				// increment shape counter and turn off inProgress flag
 				currentObject += 1;
-				inProgress = false;
+				inProgress = false;*/
 				break;
 
 			case 5: // eye dropper
@@ -2008,7 +2678,7 @@ function handleShapeInProgress() {
 
 			case 7: // wall
 
-				// get the current wall stroke and its info
+				/*// get the current wall stroke and its info
 				var wallObj = document.getElementById(platformStr + currentPlatform.toString());
 				var pointString = wallObj.getAttribute("points");
 				var numPoints = pointString.split(" ").length-1;
@@ -2046,11 +2716,65 @@ function handleShapeInProgress() {
 				// increment shape counter and turn off inProgress flag
 				currentPlatform += 1;
 				inProgress = false;
+				break;*/ // previous code commented out from when wall was a brush tool
+
+				// wall is now a polygon tool, so...
+				// clean up a partly-completed wall polygon by closing it, or deleting it if invalid
+
+				// get the current shape and its info, including the markers
+				var newPolyline = document.getElementById(platformStr + currentPlatform.toString());
+				var pointString = newPolyline.getAttribute("points");
+				var numPoints = pointString.split(" ").length / 2;
+				var startMarker = document.getElementById(polygonStartMarker);
+				var pointMarker = document.getElementById(polygonPointMarker);
+		
+				// remove the polygon point markers from the DOM
+				platformsGroup.removeChild(startMarker);
+				platformsGroup.removeChild(pointMarker);
+
+				// delete the polyline
+				platformsGroup.removeChild(newPolyline);
+		
+				// handle the case where there are less than three points
+				if (numPoints < 3) {
+					// do nothing to replace the polyline because this was not a valid shape
+			
+					// debug message
+					if (debugging) {
+						console.log("Deleted incomplete wall polygon.");
+					}
+					
+					// set flag to false, but do not increment counter
+					inProgress = false;
+				} else { // replace the polyline with a closed polygon
+					
+					// create a closed polygon to replace the polyline
+					var newPolygon = document.createElementNS(svgns, "polygon");
+					newPolygon.setAttribute("id", platformStr + currentPlatform.toString());
+					newPolygon.setAttribute("points", pointString);
+					newPolygon.setAttribute("style", "fill: " + wallColor + 
+						"; fill-rule: evenodd; stroke: " + wallColor + 
+						"; stroke-width: 1");
+					platformsGroup.appendChild(newPolygon);
+
+					// debug message
+					if (debugging) {
+						console.log(platformStr + currentPlatform.toString() +
+						": Made a wall at points: " + pointString + ".");
+					}
+					
+					// add the index of the new wall to the platform actions list
+					platformActionsList.push(currentPlatform);
+
+					// increment counter and set flag to false
+					currentPlatform += 1;
+					inProgress = false;
+				}
 				break;
 
 			case 8: // ladder
 
-				// get the current ladder stroke and its info
+				/*// get the current ladder stroke and its info
 				var ladderObj = document.getElementById(platformStr + currentPlatform.toString());
 				var pointString = ladderObj.getAttribute("points");
 				var numPoints = pointString.split(" ").length-1;
@@ -2088,6 +2812,60 @@ function handleShapeInProgress() {
 				// increment shape counter and turn off inProgress flag
 				currentPlatform += 1;
 				inProgress = false;
+				break;*/ // previous code commented out from when wall was a brush tool
+
+				// ladder is now a polygon tool, so...
+				// clean up a partly-completed ladder polygon by closing it, or deleting it if invalid
+
+				// get the current shape and its info, including the markers
+				var newPolyline = document.getElementById(platformStr + currentPlatform.toString());
+				var pointString = newPolyline.getAttribute("points");
+				var numPoints = pointString.split(" ").length / 2;
+				var startMarker = document.getElementById(polygonStartMarker);
+				var pointMarker = document.getElementById(polygonPointMarker);
+		
+				// remove the polygon point markers from the DOM
+				platformsGroup.removeChild(startMarker);
+				platformsGroup.removeChild(pointMarker);
+
+				// delete the polyline
+				platformsGroup.removeChild(newPolyline);
+		
+				// handle the case where there are less than three points
+				if (numPoints < 3) {
+					// do nothing to replace the polyline because this was not a valid shape
+			
+					// debug message
+					if (debugging) {
+						console.log("Deleted incomplete ladder polygon.");
+					}
+					
+					// set flag to false, but do not increment counter
+					inProgress = false;
+				} else { // replace the polyline with a closed polygon
+					
+					// create a closed polygon to replace the polyline
+					var newPolygon = document.createElementNS(svgns, "polygon");
+					newPolygon.setAttribute("id", platformStr + currentPlatform.toString());
+					newPolygon.setAttribute("points", pointString);
+					newPolygon.setAttribute("style", "fill: " + ladderColor + 
+						"; fill-rule: evenodd; stroke: " + ladderColor + 
+						"; stroke-width: 1");
+					platformsGroup.appendChild(newPolygon);
+
+					// debug message
+					if (debugging) {
+						console.log(platformStr + currentPlatform.toString() +
+						": Made a ladder at points: " + pointString + ".");
+					}
+
+					// add the index of the new ladder to the platform actions list
+					platformActionsList.push(currentPlatform);
+
+					// increment counter and set flag to false
+					currentPlatform += 1;
+					inProgress = false;
+				}
 				break;
 
 			case 9: // platform select
@@ -2533,7 +3311,7 @@ function mouseDown(evt) {
 
 				case 4: // eraser
 				
-					// clear out current undo/redo lists to avoid branching
+					/*// clear out current undo/redo lists to avoid branching
 					clearUndoRedoLists();
 				
 					// get mouse coordinates in the canvas
@@ -2556,7 +3334,7 @@ function mouseDown(evt) {
 						
 					// append polyline to canvas and turn on inProgress flag
 					drawingGroup.appendChild(newShape);
-					inProgress = true;
+					inProgress = true;*/
 					break;
 
 				case 5: // eye dropper
@@ -2567,7 +3345,7 @@ function mouseDown(evt) {
 
 				case 7: // wall
 				
-					// clear out current undo/redo lists to avoid branching
+					/*// clear out current undo/redo lists to avoid branching
 					clearUndoRedoLists();
 					
 					// get mouse coordinates in the canvas
@@ -2590,12 +3368,14 @@ function mouseDown(evt) {
 					
 					// append polyline to platforms and turn on inProgress flag
 					platformsGroup.appendChild(newShape);
-					inProgress = true;
+					inProgress = true;*/
+
+					// do nothing, switched this tool to be a polygon tool instead of a brush
 					break;
 				
 				case 8: // ladder
 				
-					// clear out current undo/redo lists to avoid branching
+					/*// clear out current undo/redo lists to avoid branching
 					clearUndoRedoLists();
 					
 					// get mouse coordinates in the canvas
@@ -2618,7 +3398,9 @@ function mouseDown(evt) {
 					
 					// append polyline to platforms and turn on inProgress flag
 					platformsGroup.appendChild(newShape);
-					inProgress = true;
+					inProgress = true;*/
+
+					// do nothing, switched this tool to be a polygon tool instead of a brush
 					break;
 					
 				case 9: // platform select
@@ -2713,7 +3495,7 @@ function mouseMove(evt) {
 
 			case 4: // eraser
 				
-				// only do this if a shape is currently in progress
+				/*// only do this if a shape is currently in progress
 				if(inProgress) {
 					// get the mouse coordinates in the canvas
 					updateMouseCoords(evt);
@@ -2725,7 +3507,7 @@ function mouseMove(evt) {
 					// add current point to the polyline
 					pointString += " " + xMouse.toString() + " " + yMouse.toString();
 					shapeInProgress.setAttribute("points", pointString);
-				}
+				}*/
 				break;
 
 			case 5: // eye dropper
@@ -2736,7 +3518,7 @@ function mouseMove(evt) {
 
 			case 7: // wall
 			
-				// only do this if a shape is currently in progress
+				/*// only do this if a shape is currently in progress
 				if(inProgress) {
 					// get the mouse coordinates in the canvas
 					updateMouseCoords(evt);
@@ -2748,12 +3530,14 @@ function mouseMove(evt) {
 					// add current point to the polyline
 					pointString += " " + xMouse.toString() + " " + yMouse.toString();
 					shapeInProgress.setAttribute("points", pointString);
-				}
+				}*/
+
+				// do nothing, switched this tool to be a polygon tool instead of a brush
 				break;
 				
 			case 8: // ladder
 			
-				// only do this if a shape is currently in progress
+				/*// only do this if a shape is currently in progress
 				if(inProgress) {
 					// get the mouse coordinates in the canvas
 					updateMouseCoords(evt);
@@ -2765,7 +3549,9 @@ function mouseMove(evt) {
 					// add current point to the polyline
 					pointString += " " + xMouse.toString() + " " + yMouse.toString();
 					shapeInProgress.setAttribute("points", pointString);
-				}
+				}*/
+
+				// do nothing, switched this tool to be a polygon tool instead of a brush
 				break;
 				
 			case 9: // platform select
@@ -2887,7 +3673,7 @@ function mouseUp(evt) {
 
 				case 4: // eraser
 				
-					// get the current eraser stroke and its info
+					/*// get the current eraser stroke and its info
 					var eraserObj = document.getElementById(objectStr + currentObject.toString());
 					var pointString = eraserObj.getAttribute("points");
 					var numPoints = pointString.split(" ").length-1;
@@ -2924,7 +3710,7 @@ function mouseUp(evt) {
 					
 					// increment shape counter and turn off inProgress flag
 					currentObject += 1;
-					inProgress = false;
+					inProgress = false;*/
 					break;
 
 				case 5: // eye dropper
@@ -2935,7 +3721,7 @@ function mouseUp(evt) {
 
 				case 7: // wall
 				
-					// get the current wall stroke and its info
+					/*// get the current wall stroke and its info
 					var wallObj = document.getElementById(platformStr + currentPlatform.toString());
 					var pointString = wallObj.getAttribute("points");
 					var numPoints = pointString.split(" ").length-1;
@@ -2972,12 +3758,14 @@ function mouseUp(evt) {
 					
 					// increment shape counter and turn off inProgress flag
 					currentPlatform += 1;
-					inProgress = false;
+					inProgress = false;*/
+
+					// do nothing, switched this tool to be a polygon tool instead of a brush
 					break;
 					
 				case 8: // ladder
 				
-					// get the current ladder stroke and its info
+					/*// get the current ladder stroke and its info
 					var ladderObj = document.getElementById(platformStr + currentPlatform.toString());
 					var pointString = ladderObj.getAttribute("points");
 					var numPoints = pointString.split(" ").length-1;
@@ -3014,7 +3802,9 @@ function mouseUp(evt) {
 					
 					// increment shape counter and turn off inProgress flag
 					currentPlatform += 1;
-					inProgress = false;
+					inProgress = false;*/
+
+					// do nothing, switched this tool to be a polygon tool instead of a brush
 					break;
 					
 				case 9: // platform select
@@ -3170,9 +3960,215 @@ function mouseClick(evt) {
 					break;
 
 				case 7: // wall
+
+					// clear out current undo/redo lists to avoid branching
+					// but only do this at first click of polygon to avoid redundancy
+					if (!inProgress) {
+						clearUndoRedoLists();
+					}
+			
+					// get mouse coordinates in the canvas
+					updateMouseCoords(evt);
+
+					if (!inProgress) { // start a new polyline
+						// create a polyline starting at the current mouse point
+						xStart = xMouse;
+						yStart = yMouse;
+						var newPolyline = document.createElementNS(svgns, "polyline");
+						newPolyline.setAttribute("id", platformStr + currentPlatform.toString());
+						newPolyline.setAttribute("points", xStart.toString() + " " +
+									yStart.toString());
+						shapeFillChoiceString = shapeFillNone; // no fill until done
+						newPolyline.setAttribute("style", "fill: " +
+							shapeFillChoiceString + "; stroke: " + 
+							wallColor + "; stroke-width: 1");
+						platformsGroup.appendChild(newPolyline);
+					
+						// create the polygon start point marker
+						var startMarker = document.createElementNS(svgns, "ellipse");
+						startMarker.setAttribute("id", polygonStartMarker);
+						startMarker.setAttribute("cx", xStart);
+						startMarker.setAttribute("cy", yStart);
+						startMarker.setAttribute("rx", polygonMarkerRadius);
+						startMarker.setAttribute("ry", polygonMarkerRadius);
+						startMarker.setAttribute("style", "font-family: sans-serif; " +
+							"font-size: 14pt; stroke: " + wallColor + "; fill: " +
+							wallColor);
+						platformsGroup.appendChild(startMarker);
+
+						// create the polygon current point marker
+						var pointMarker = document.createElementNS(svgns, "ellipse");
+						pointMarker.setAttribute("id", polygonPointMarker);
+						pointMarker.setAttribute("cx", xStart);
+						pointMarker.setAttribute("cy", yStart);
+						pointMarker.setAttribute("rx", polygonMarkerRadius);
+						pointMarker.setAttribute("ry", polygonMarkerRadius);
+						pointMarker.setAttribute("style", "font-family: sans-serif; " +
+							"font-size: 14pt; stroke: " + wallColor + "; fill: " +
+							wallColor);
+						platformsGroup.appendChild(pointMarker);
+
+						// mark that a shape is in progress
+						inProgress = true;
+
+					} else { // continue the polyline in progress
+						// get the current shape and its info, including the marker
+						var newPolyline = document.getElementById(platformStr + currentPlatform.toString());
+						var pointString = newPolyline.getAttribute("points");
+						var startMarker = document.getElementById(polygonStartMarker);
+						var pointMarker = document.getElementById(polygonPointMarker);
+					
+						// check for the polygon being done/closed
+						if ((Math.abs(xStart - xMouse) <= polygonCloseGap) && (
+							Math.abs(yStart - yMouse) <= polygonCloseGap)) {
+							// remove the polyline from the DOM
+							platformsGroup.removeChild(newPolyline);
+
+							// remove the polygon point markers from the DOM
+							platformsGroup.removeChild(startMarker);
+							platformsGroup.removeChild(pointMarker);
+
+							// create a closed polygon to replace the polyline
+							var newPolygon = document.createElementNS(svgns, "polygon");
+							newPolygon.setAttribute("id", platformStr + currentPlatform.toString());
+							newPolygon.setAttribute("points", pointString);
+							newPolygon.setAttribute("style", "fill: " + wallColor + 
+								"; fill-rule: evenodd; stroke: " + wallColor + 
+								"; stroke-width: 1");
+							platformsGroup.appendChild(newPolygon);
+
+							// mark that the shape is complete
+							if (debugging) {
+								console.log(platformStr + currentPlatform.toString() +
+								": Made a wall at points: "+
+								newPolygon.getAttribute("points") + ".");
+							}
+							
+							// add the index of the new wall to the platform actions list
+							platformActionsList.push(currentPlatform);
+							
+							// increment counter and set flag
+							currentPlatform += 1;
+							inProgress = false;
+						} else { // try to add new point to polyline
+							// first check to make sure this doesn't turn the shape concave
+							pointString += " " + xMouse.toString() + " " + yMouse.toString();
+							if (isConvex(pointString)) {
+								// new point okay, so update the points string
+								newPolyline.setAttribute("points", pointString);
+
+								// and update the polygon current point marker
+								pointMarker.setAttribute("cx", xMouse);
+								pointMarker.setAttribute("cy", yMouse);
+							} // else to nothing with this click b/c it is invalid
+						}
+					}
 					break;
 				
 				case 8: // ladder
+
+					// clear out current undo/redo lists to avoid branching
+					// but only do this at first click of polygon to avoid redundancy
+					if (!inProgress) {
+						clearUndoRedoLists();
+					}
+			
+					// get mouse coordinates in the canvas
+					updateMouseCoords(evt);
+
+					if (!inProgress) { // start a new polyline
+						// create a polyline starting at the current mouse point
+						xStart = xMouse;
+						yStart = yMouse;
+						var newPolyline = document.createElementNS(svgns, "polyline");
+						newPolyline.setAttribute("id", platformStr + currentPlatform.toString());
+						newPolyline.setAttribute("points", xStart.toString() + " " +
+									yStart.toString());
+						shapeFillChoiceString = shapeFillNone; // no fill until done
+						newPolyline.setAttribute("style", "fill: " +
+							shapeFillChoiceString + "; stroke: " + 
+							ladderColor + "; stroke-width: 1");
+						platformsGroup.appendChild(newPolyline);
+					
+						// create the polygon start point marker
+						var startMarker = document.createElementNS(svgns, "ellipse");
+						startMarker.setAttribute("id", polygonStartMarker);
+						startMarker.setAttribute("cx", xStart);
+						startMarker.setAttribute("cy", yStart);
+						startMarker.setAttribute("rx", polygonMarkerRadius);
+						startMarker.setAttribute("ry", polygonMarkerRadius);
+						startMarker.setAttribute("style", "font-family: sans-serif; " +
+							"font-size: 14pt; stroke: " + ladderColor + "; fill: " +
+							ladderColor);
+						platformsGroup.appendChild(startMarker);
+
+						// create the polygon current point marker
+						var pointMarker = document.createElementNS(svgns, "ellipse");
+						pointMarker.setAttribute("id", polygonPointMarker);
+						pointMarker.setAttribute("cx", xStart);
+						pointMarker.setAttribute("cy", yStart);
+						pointMarker.setAttribute("rx", polygonMarkerRadius);
+						pointMarker.setAttribute("ry", polygonMarkerRadius);
+						pointMarker.setAttribute("style", "font-family: sans-serif; " +
+							"font-size: 14pt; stroke: " + ladderColor + "; fill: " +
+							ladderColor);
+						platformsGroup.appendChild(pointMarker);
+
+						// mark that a shape is in progress
+						inProgress = true;
+
+					} else { // continue the polyline in progress
+						// get the current shape and its info, including the marker
+						var newPolyline = document.getElementById(platformStr + currentPlatform.toString());
+						var pointString = newPolyline.getAttribute("points");
+						var startMarker = document.getElementById(polygonStartMarker);
+						var pointMarker = document.getElementById(polygonPointMarker);
+					
+						// check for the polygon being done/closed
+						if ((Math.abs(xStart - xMouse) <= polygonCloseGap) && (
+							Math.abs(yStart - yMouse) <= polygonCloseGap)) {
+							// remove the polyline from the DOM
+							platformsGroup.removeChild(newPolyline);
+
+							// remove the polygon point markers from the DOM
+							platformsGroup.removeChild(startMarker);
+							platformsGroup.removeChild(pointMarker);
+
+							// create a closed polygon to replace the polyline
+							var newPolygon = document.createElementNS(svgns, "polygon");
+							newPolygon.setAttribute("id", platformStr + currentPlatform.toString());
+							newPolygon.setAttribute("points", pointString);
+							newPolygon.setAttribute("style", "fill: " + ladderColor + 
+								"; fill-rule: evenodd; stroke: " + ladderColor + 
+								"; stroke-width: 1");
+							platformsGroup.appendChild(newPolygon);
+
+							// mark that the shape is complete
+							if (debugging) {
+								console.log(platformStr + currentPlatform.toString() +
+								": Made a ladder at points: "+
+								newPolygon.getAttribute("points") + ".");
+							}
+							
+							// add the index of the new ladder to the platform actions list
+							platformActionsList.push(currentPlatform);
+							
+							// increment counter and set flag
+							currentPlatform += 1;
+							inProgress = false;
+						} else { // try to add new point to polyline
+							// first check to make sure this doesn't turn the shape concave
+							pointString += " " + xMouse.toString() + " " + yMouse.toString();
+							if (isConvex(pointString)) {
+								// new point okay, so update the points string
+								newPolyline.setAttribute("points", pointString);
+
+								// and update the polygon current point marker
+								pointMarker.setAttribute("cx", xMouse);
+								pointMarker.setAttribute("cy", yMouse);
+							} // else to nothing with this click b/c it is invalid
+						}
+					}
 					break;
 				
 				case 9: // platform select
@@ -3183,6 +4179,50 @@ function mouseClick(evt) {
 			}
 		} // else do nothing
 	} // else do nothing
+}
+
+// helper function that determines if the given string of points describes a convex polygon or not
+// returns true if polygon is convex, else false
+// references: http://svgdiscovery.com/C060/svg-convex-polygon-test.htm
+// references: https://stackoverflow.com/questions/471962/how-do-determine-if-a-polygon-is-complex-convex-nonconvex
+function isConvex(points) {
+	// get the string of points into a 2D array structure
+	var pointsList = points.split(" ");
+	var pointsArray = [];
+	for (var j = 0; j < pointsList.length; j += 2) {
+		pointsArray.push([Number(pointsList[j]), Number(pointsList[j + 1])]);
+	}
+
+	// set up for test
+	var sign = false;
+	var n = pointsArray.length;
+	
+	// boundary case of too few points -> assume convex
+	if (n < 4) {
+		return true;
+	}
+
+	// calculate n sets of cross products
+	for (var i = 0; i < n; i++) {
+		var dx1 = pointsArray[(i + 1) % n][0] - pointsArray[(i) % n][0];
+		var dy1 = pointsArray[(i + 1) % n][1] - pointsArray[(i) % n][1];
+		var dx2 = pointsArray[(i + 2) % n][0] - pointsArray[(i + 1) % n][0];
+		var dy2 = pointsArray[(i + 2) % n][1] - pointsArray[(i + 1) % n][1];
+		var zcrossproduct = dx1 * dy2 - dy1 * dx2;
+		
+		// and keep a running comparison of their signs
+		if (i == 0) {
+			sign = zcrossproduct > 0;
+		} else {
+			if (sign != (zcrossproduct > 0)) {
+				// sign mismatch -> this shape is not convex
+				return false;
+			}
+		}
+	}
+	
+	// no sign mismatch found -> this shape is convex
+	return true;
 }
 
 // platform click event handler

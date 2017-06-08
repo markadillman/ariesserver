@@ -43,6 +43,7 @@ var avatarMultiplier = 5.8; // factor between avatar size and size of oval in dr
 var playerSpawnX = canvasEdge + 365;	// spawn in hole in tree
 var playerSpawnY = canvasEdge + 75;
 var playerSpawnDelay = 1000; // ms to wait before spawning player on first world entry
+var exitDelay = 500; // ms to wait before exiting to make sure no assetRender calls in progress
 var titleTextColor = '#373854';
 var selectedButtonColor = '#99CCFF';
 var panTime = 500; // ms
@@ -397,7 +398,7 @@ function loadPlatforms() {
 		.color('green');
 	// Toni added a platform to allow us to get to the middle 2 outside tiles for now
 	Crafty.e('Platform, 2D, Canvas, Color')
-		.attr({x: -1000, y: canvasHeight - canvasEdge, w: 2000, h: 10})
+		.attr({x: -2000, y: canvasHeight - canvasEdge, w: 4000, h: 10})
 		.color('green');
 	// Floor
 	Crafty.e('Platform, 2D, Canvas, Color')
@@ -424,6 +425,9 @@ function loadPlayer() {
 		xCoord = playerSpawnX;
 		yCoord = playerSpawnY;
 		firstWorldEntry = false;
+
+		// Add 0,0 to teleportation markers
+        placeTeleMarker(0, 0);
 	} else {
 		xCoord = currentPlayerX;
 		yCoord = currentPlayerY;
@@ -519,9 +523,9 @@ function loadPlayer() {
 					}, exitDelay, 0);
 				}
 				if (e.key == Crafty.keys.T) {
-					// drop a teleportation marker
-					// ### check to make sure one doesn't already exist at these coordinates?
-					// ### create marker at player's current coordinates in the world
+                    console.log('Teleport markers before: ', JSON.parse(localStorage.teleportMarkers));
+				    placeTeleMarker(player.x, player.y);
+                    console.log('Teleport markers after: ', JSON.parse(localStorage.teleportMarkers));
 				}
 				if (e.key == Crafty.keys.W) {
 					// toggle wall view mode
@@ -1168,4 +1172,44 @@ function buildSurfacesFromSVG(svg, tileX, tileY)
         Crafty.e(platformType + ', Platform, 2D, Canvas')
             .attr({x: coords[i], y: coords[i + 1], w: tileWidth, h: tileHeight});
 	}
+}
+
+function placeTeleMarker(x, y)
+{
+    // drop a teleportation marker
+    // Get current coordinates as a string
+    var xStr = x.toString();
+    var yStr = y.toString();
+    var coordStr = '(' + xStr + ',' + yStr + ')';  // Format: (x,y)
+
+    // ### check to make sure one doesn't already exist at these coordinates
+    if(localStorage.teleportMarkers == null)
+    {
+        var teleportMarkers = [];
+    }
+    else
+    {
+        var teleportMarkers = JSON.parse(localStorage.teleportMarkers);
+    }
+
+    var exists = false;
+    for(var i = 0; i < teleportMarkers.length; i++)
+    {
+        if(teleportMarkers[i] == coordStr)
+        {
+            exists = true;
+        }
+    }
+    console.log('Exists: ', exists);
+
+    if(exists)
+    {
+        // Do nothing
+    }
+    else
+    {
+        // ### create marker at player's current coordinates in the world
+        teleportMarkers.push(coordStr);
+        localStorage.teleportMarkers = JSON.stringify(teleportMarkers);
+    }
 }
