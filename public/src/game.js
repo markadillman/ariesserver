@@ -680,10 +680,10 @@ function assetRender(assets){
 		//SVG tags added so that it can be a standalone, valid XML file for URL
 		var myGroupString = svgPrefix + assets[asset]['svg'] + svgPostfix;
 		if (verboseDebugging) {
-			console.log("svg");
-			console.log(assets[asset]['svg']);
-			console.log("svg string in text");
-			console.log(myGroupString);
+			//console.log("svg");
+			// console.log(assets[asset]['svg']);
+			//console.log("svg string in text");
+			//console.log(myGroupString);
 		}
 		//generate a URL for this svg grouping
 		var blobSvg = new Blob([myGroupString],{type:"image/svg+xml;charset=utf-8"}),
@@ -1085,6 +1085,53 @@ function doEnterButton() {
 // SVG-to-platform helper function
 function buildSurfacesFromSVG(svg, tileX, tileY)
 {
+    var platformType;
+    var polyCoords = [];
+
+    // Define platforms
+    if(platformType == 'Wall')
+    {
+        Crafty.c("Wall", {
+            init: function() {
+                this.requires("2D, Canvas");
+                this.bind("Draw", this._draw_me);
+                this.ready = true;
+            },
+            _draw_me: function(e) {
+                var ctx = e.ctx;
+                ctx.lineWidth = 1;
+                ctx.strokeStyle = "black";
+                ctx.beginPath();
+                ctx.moveTo(polyCoords[0], polyCoords[1]);
+                for (var i = 2; i < polyCoords.length-1; i += 2) {
+                    ctx.lineTo(polyCoords[i], polyCoords[i+1]);
+                }
+                ctx.stroke();
+            }
+        });
+    }
+    else
+    {
+        Crafty.c("Ladder", {
+            init: function() {
+                this.requires("2D, Canvas");
+                this.bind("Draw", this._draw_me);
+                this.ready = true;
+            },
+            _draw_me: function(e) {
+                var ctx = e.ctx;
+                ctx.lineWidth = 1;
+                ctx.strokeStyle = "red";
+                ctx.beginPath();
+                ctx.moveTo(polyCoords[0], polyCoords[1]);
+                for (var i = 2; i < polyCoords.length-1; i += 2) {
+                    ctx.lineTo(polyCoords[i], polyCoords[i+1]);
+                }
+                ctx.stroke();
+            }
+        });
+    }
+
 	// Append/prepend tags to get parser to play nice
 	svg = '<svg>' + svg + '</svg>';
 
@@ -1097,80 +1144,33 @@ function buildSurfacesFromSVG(svg, tileX, tileY)
 
 	for(j = 0; j < pTags.length; j += 1)
 	{
-		console.log('ID: ' + pTags[j].getAttribute('id'));
-		console.log('Style: ' + pTags[j].getAttribute('style'));
-
 		// Get permeable platforms (red)
 		if(pTags[j].getAttribute('id').charAt(0) == "p" &&
 		   pTags[j].getAttribute('style').includes("stroke: red"))
 		{
-			var platformType = "Ladder";
+			platformType = "Ladder";
 		}
 
 		else if(pTags[j].getAttribute('id').charAt(0) == "p" &&
 			    pTags[j].getAttribute('style').includes("stroke: black"))
 		{
-			var platformType = "Wall";
+			platformType = "Wall";
 		}
 		else
 		{
 			// Not a platform
-			console.log('Not a platform.');
 			continue;
 		}
-		console.log('Platform!');
 
 		var str = pTags[j].getAttribute('points');  // Raw coordinates string
 
 		// For pair in string:
-		var coords = str.split(" ");  // Array of coordinates
-
-		// Instantiate platforms
-        if(platformType == 'Wall')
-        {
-            Crafty.c("Wall", {
-                init: function() {
-                    this.requires("2D, Canvas");
-                    this.bind("Draw", this._draw_me);
-                    this.ready = true;
-                },
-                _draw_me: function(e) {
-                    var ctx = e.ctx;
-                    ctx.lineWidth = 1;
-                    ctx.strokeStyle = "black";
-                    ctx.beginPath();
-                    ctx.moveTo(coords[0], coords[1]);
-                    for (var i = 2; i < coords.length-1; i += 2) {
-                        ctx.lineTo(coords[i], coords[i+1]);
-                    }
-                    ctx.stroke();
-                }
-            });
-        }
-        else
-        {
-            Crafty.c("Ladder", {
-                init: function() {
-                    this.requires("2D, Canvas");
-                    this.bind("Draw", this._draw_me);
-                    this.ready = true;
-                },
-                _draw_me: function(e) {
-                    var ctx = e.ctx;
-                    ctx.lineWidth = 1;
-                    ctx.strokeStyle = "red";
-                    ctx.beginPath();
-                    ctx.moveTo(coords[0], coords[1]);
-                    for (var i = 2; i < coords.length-1; i += 2) {
-                        ctx.lineTo(coords[i], coords[i+1]);
-                    }
-                    ctx.stroke();
-                }
-            });
-        }
+		polyCoords = str.split(" ");  // Array of coordinates
 
         Crafty.e(platformType + ', Platform, 2D, Canvas')
-            .attr({x: coords[i], y: coords[i + 1], w: tileWidth, h: tileHeight});
+            .attr({x: polyCoords[i] + currentUpperLeftX + canvasEdge,
+                   y: polyCoords[i + 1] + currentUpperLeftY + canvasEdge,
+                   w: tileWidth, h: tileHeight});
 	}
 }
 
