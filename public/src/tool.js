@@ -125,7 +125,7 @@ var eventListenerPwdBtnOk= null;
 var eventListenerPwdBtnSkip= null;
 var eventListenerPwdBtnCancel= null;
 var eventListenerPwdBtnPublic= null;
-var allEvents = [];
+var allEvents;
 //this will allow removal of unknown, dynamic event listeners, 
 //adapted from code at http://stackoverflow.com/questions/8841138/remove-event-listener-in-java
 //credit to SO user TERMtm
@@ -526,6 +526,15 @@ function initHTML() {
 	myFileInput.type = "file";
 	myFileInput.accept = ".svg";
 	myFileInput.multiple = false;
+
+	//global event arrays
+	eventListenerMsgBtnOk = new Array();
+	eventListenerMsgBtnCancel = new Array();
+	eventListenerPwdBtnOk = new Array();
+	eventListenerPwdBtnSkip = new Array();
+	eventListenerPwdBtnCancel = new Array();
+	eventListenerPwdBtnPublic = new Array();
+	allEvents = [];
 	
 	// create the hidden canvas for getting color info
 	hiddenCanvas = document.createElement("canvas");
@@ -1444,13 +1453,6 @@ function panDownButton() {
 // takes in the svg string of the avatar being edited
 // myAvatarString == "" means blank/new avatar
 function doAvatarEdit(myAvatarString) {
-	//recreate global arrays
-	eventListenerMsgBtnOk = new Array();
-	eventListenerMsgBtnCancel = new Array();
-	eventListenerPwdBtnOk = new Array();
-	eventListenerPwdBtnSkip = new Array();
-	eventListenerPwdBtnCancel = new Array();
-	eventListenerPwdBtnPublic = new Array();
 	
 	// clear out everything from drawing area just in case
 	svgClearAll();
