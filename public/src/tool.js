@@ -1280,7 +1280,7 @@ function removeEventListeners(){
 	}*/
 	if (eventListenerPwdBtnOk.length > 1){
 		for (var i = (eventListenerPwdBtnOk.length-1); i >= 0 ; i = i - 1){
-			var tempnog = pwdBtnOk.eventListener(eventListenerPwdBtnOk[i]);
+			var tempnog = pwdBtnOK.eventListener(eventListenerPwdBtnOk[i]);
 			console.log("function");
 			console.log(eventListenerPwdBtnOk[i]);
 			eventListenerPwdBtnOk.splice(i,1);
