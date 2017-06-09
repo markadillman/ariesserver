@@ -1409,11 +1409,15 @@ function doDeleteAvatar() {
 }
 function submitAvatarToLibrary() {
 	// are you sure? message
+	if (verboseDebugging)
+	{console.log("SUBMIT MADE!");}
 	turnOffViewButtons();
 	displayMessage("Are you sure you want to submit this avatar to the public library?",
 				   doSubmitAvatar, turnOnViewButtons, false, false);
 }
 function doSubmitAvatar() {
+	if (verboseDebugging)
+	{console.log("SUBMIT DONE");}
 	// actually send data of currently selected avatar to the server
 	// get data from carouselData[carouselIndex], will be a valid SVG string
 
