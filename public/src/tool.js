@@ -1256,6 +1256,7 @@ function doMsgBtnCancel() {
 function doNothing() {
 	// does what it says on the tin
 	// except for clearing off the message div
+	removeEventListeners();
 	messageDiv.style.display = "none";
 }
 function hardReload() {
@@ -1409,6 +1410,7 @@ function doAvatarEdit(myAvatarString) {
 // exits from the currently edited avatar back into game mode
 // does not save the current edits!
 function doAvatarExit() {
+	removeEventListeners();
 	
 	// clear out all the current SVG
 	svgClearAll();
@@ -1463,6 +1465,7 @@ function tileEditRequest(xTile,yTile){
   Request body has structure: {xcoord:x,ycoord:y,<message:m>}
 */
 function tileEditCallback(request){
+	removeEventListeners();
 	//if the response is green-lighted (224), return it to commence with do edit
 	var body = JSON.parse(request.responseText);
 	if (verboseDebugging)
@@ -1660,6 +1663,7 @@ function doTileEdit(currentX, currentY) {
 // exits from the currently edited tile back into game mode
 // does not save the current edits!
 function doTileExit() {
+	removeEventListeners();
 	if (verboseDebugging){
 		console.log("in doTileExit debugging");
 		console.log("this is good");
@@ -1687,6 +1691,7 @@ function doTileExit() {
 // cannot use a cancel to steal a tile before they gain edit access
 // if someone else is editing.
 function doTileExitNoFree() {
+	removeEventListeners();
 	if (verboseDebugging){
 		console.log("in doTileExit debugging");
 		console.log("this is good");
@@ -2283,6 +2288,7 @@ function saveToFile(filename, textdata) {
 // borrows a bit from Mark's code for loading/saving SVG on the server
 // references: https://www.html5rocks.com/en/tutorials/file/dndfiles/
 function svgSaveToLocal() {
+	removeEventListeners();
 	handleShapeInProgress();
 	
 	// generate the file string
@@ -2494,6 +2500,7 @@ function promptPWOnEdit(message,initCoords){
 }
 
 function editPWSubmit(xcoord,ycoord){
+	removeEventListeners();
 	var payload = {};
 	payload.pw = document.getElementById("msgTextInput").value;
 	payload.x = xcoord;
@@ -2534,6 +2541,7 @@ function editPWResponse(request,pw){
 
 //helper function for password submit cancel
 function removePrompt(){
+	removeEventListeners();
 	messageDiv.style.display = "none";
 	passwordDiv.style.display = "none";
 }
@@ -2623,13 +2631,13 @@ function completeEdit(){
 //companinon to complete edit, but informs of an error in edit submission.
 function editError(){
 	displayMessage("There has been an error submitting your art.\nSave your work locally and try again later.",
-		            removePrompt(),removePrompt(),false,false);
+		            removePrompt,removePrompt,false,false);
 }
 
 //this will inform that, due to a server error, no new password has been set. Edits still took.
 function pwUpdateError(){
-	displayMessage("There was an error updating the password. The previous\npassword will still be used to access the tile edit feature\nand any edits you have made have been saved. Try to reset\nthe password for this tile again later", removePrompt(),
-					removePrompt(),false,false);
+	displayMessage("There was an error updating the password. The previous\npassword will still be used to access the tile edit feature\nand any edits you have made have been saved. Try to reset\nthe password for this tile again later", removePrompt,
+					removePrompt,false,false);
 }
 
 // MARK ADDED:  borrowed from Tony's displayMessage but conformed for passwords and more buttons
