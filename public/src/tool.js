@@ -133,8 +133,8 @@ HTMLElement.prototype.eventListener = function(type, func, capture){
 	console.log(this);
 	console.log("IN PROTO ARGUMENTS");
 	console.log(arguments);
-	console.log("IN PROTO ARGUMENTS[0]");
-	console.log(arguments[0]);
+	console.log("IN PROTO ARGUMENTS[1]");
+	console.log(arguments[1]);
 	//a single object argument possessing the event listener will now remove that event listener
 	if(arguments.length === 0){
 		console.log("this weird stuff is happening");
@@ -1110,10 +1110,8 @@ function displayMessage(msg, okFn, cancelFn, useTextInput, hideCancelButton, def
 			//eventListenerMsgBtnCancel = arguments.callee;
 			//this.removeEventListener("click",click2,false);
 			eventListenerMsgBtnCancel.push(arguments.callee);
-			var msgOk = [];
-			var msgCancel = [];
-			msgOk.push = arguments.callee;
-			removeEventListener(msgOk,msgCancel);
+			
+			removeEventListener();
 			messageDiv.style.display = "none";
 			cancelFn();
 		},false);
