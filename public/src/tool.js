@@ -1074,6 +1074,8 @@ function displayMessage(msg, okFn, cancelFn, useTextInput, hideCancelButton, def
 			messageDiv.style.display = "none";
 			okFn(); 
 		},false);
+		console.log("TEMP EVENT OK BOT");
+		console.log(tempEventOkBot);
 		//add event to array 
 		if (!(eventListenerMsgBtnOk===null) || !(eventListenerMsgBtnOk ===undefined))
 		{
@@ -1093,6 +1095,8 @@ function displayMessage(msg, okFn, cancelFn, useTextInput, hideCancelButton, def
 			messageDiv.style.display = "none";
 			cancelFn();
 		},false);
+		onsole.log("TEMP EVENT CANCEL BOT");
+		console.log(tempEventCancelBot);
 		//add event to array 
 		if (!(eventListenerMsgBtnCancel===null) || !(eventListenerMsgBtnCancel ===undefined)){
 			if (Object.prototype.toString.call(eventListenerMsgBtnCancel) === '[object Array]')
