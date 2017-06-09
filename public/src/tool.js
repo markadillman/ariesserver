@@ -1166,6 +1166,8 @@ function removeEventListeners(){
 	if (eventListenerMsgBtnOk.length > 1){
 		for (var i = (eventListenerMsgBtnOk.length-1); i >= 0 ; i = i - 1){
 			var tempnog = msgBtnOK.eventListener(eventListenerMsgBtnOk[i][1]);
+			console.log("function");
+			console.log(eventListenerMsgBtnOk[i][1]);
 			eventListenerMsgBtnOk.splice(i,1);
 			console.log("tempnog");
 			console.log(tempnog);
@@ -1176,6 +1178,8 @@ function removeEventListeners(){
 	if (eventListenerMsgBtnCancel.length > 1){
 		for (var i = (eventListenerMsgBtnCancel.length-1); i >= 0; i = i - 1){
 			var tempnog = msgBtnCancel.eventListener(eventListenerMsgBtnCancel[i][1]);
+			console.log("function");
+			console.log(eventListenerMsgBtnCancel[i][1]);
 			eventListenerMsgBtnCancel.splice(i,1);
 			console.log("tempnog");
 			console.log(tempnog);
@@ -1186,6 +1190,8 @@ function removeEventListeners(){
 	if (eventListenerPwdBtnOk.length > 1){
 		for (var i = (eventListenerPwdBtnOk.length-1); i >= 0 ; i = i - 1){
 			var tempnog = pwdBtnOk.eventListener(eventListenerPwdBtnOk[i][1]);
+			console.log("function");
+			console.log(eventListenerPwdBtnOk[i][1]);
 			eventListenerPwdBtnOk.splice(i,1);
 			console.log("tempnog");
 			console.log(tempnog);
@@ -1196,6 +1202,8 @@ function removeEventListeners(){
 	if (eventListenerPwdBtnCancel.length > 1){
 		for (var i = (eventListenerPwdBtnCancel.length-1); i >= 0 ; i = i - 1){
 			var tempnog = pwdBtnCancel.eventListener(eventListenerPwdBtnCancel[i][1]);
+			console.log("function");
+			console.log(eventListenerPwdBtnCancel[i][1]);
 			eventListenerPwdBtnCancel.splice(i,1);
 			console.log("tempnog");
 			console.log(tempnog);
@@ -1205,8 +1213,10 @@ function removeEventListeners(){
 	}
 	if (eventListenerPwdBtnSkip.length > 1){
 		for (var i = (eventListenerPwdBtnSkip.length - 1); i >= 0 ; i = i - 1){
-			eventListenerPwdBtnSkip.splice(i,1);
 			var tempnog = pwdBtnSkip.eventListener(eventListenerPwdBtnSkip[i][1]);
+			console.log("function");
+			console.log(eventListenerPwdBtnSkip[i][1]);
+			eventListenerPwdBtnSkip.splice(i,1);
 			console.log("tempnog");
 			console.log(tempnog);
 			console.log("pwdokarray");
@@ -1215,8 +1225,10 @@ function removeEventListeners(){
 	}
 	if (eventListenerPwdBtnPublic.length > 1){
 		for (var i = (eventListenerPwdBtnPublic.length - 1); i >= 0 ; i = i - 1){
-			eventListenerPwdBtnPublic.splice(i,1);
 			var tempnog = pwdBtnPublic.eventListener(eventListenerPwdBtnPublic[i][1]);
+			console.log("function");
+			console.log(eventListenerPwdBtnPublic[i][1]);
+			eventListenerPwdBtnPublic.splice(i,1);
 			console.log("tempnog");
 			console.log(tempnog);
 			console.log("pwdokarray");
