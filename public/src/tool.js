@@ -1137,17 +1137,17 @@ function displayMessage(msg, okFn, cancelFn, useTextInput, hideCancelButton, def
 //accumulating. Somewhat redundant with the new self-removing functions above.
 function removeEventListeners(){
 	console.log("starting arrays for clear");
-	console.log("ok");
+	console.log("remove listeners ok");
 	console.log(eventListenerMsgBtnOk);
-	console.log("cancel");
+	console.log("remove listenerscancel");
 	console.log(eventListenerMsgBtnCancel);
-	console.log("password ok");
+	console.log("remove listenerspassword ok");
 	console.log(eventListenerPwdBtnOk);
-	console.log("password cancel");
+	console.log("remove listenerspassword cancel");
 	console.log(eventListenerPwdBtnCancel);
-	console.log("passwordSkip");
+	console.log("remove listenerspasswordSkip");
 	console.log(eventListenerPwdBtnSkip);
-	console.log("passwordPublic");
+	console.log("remove listenerspasswordPublic");
 	console.log(eventListenerPwdBtnPublic);
 
 	var pwdBtnOK = document.getElementById('pwdBtnOK');
