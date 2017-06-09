@@ -975,7 +975,7 @@ function displayMessage(msg, okFn, cancelFn, useTextInput, hideCancelButton, def
 	//remove previous event listeners so that they do not aggregate to multiple per push
 	console.log("MESSAGE");
 	console.log(msg);
-	removeEventListeners();
+	//removeEventListeners();
 	messageText.innerHTML = msg;
 	if (initCoords&&textInputPassword){
 		//this works because the truthiness of strings in Javascriprt. Both true and defined.
@@ -1090,6 +1090,7 @@ function displayMessage(msg, okFn, cancelFn, useTextInput, hideCancelButton, def
 			//eventListenerMsgBtnOk = arguments.callee;
 			//this.removeEventListener("click",click1,false);
 			eventListenerMsgBtnOk.push(arguments.callee);
+			console.log("INNER REMOVE");
 			removeEventListeners();
 			messageDiv.style.display = "none";
 			okFn();
@@ -1113,7 +1114,7 @@ function displayMessage(msg, okFn, cancelFn, useTextInput, hideCancelButton, def
 			//eventListenerMsgBtnCancel = arguments.callee;
 			//this.removeEventListener("click",click2,false);
 			eventListenerMsgBtnCancel.push(arguments.callee);
-			
+			console.log("INNER REMOVE");
 			removeEventListeners();
 			messageDiv.style.display = "none";
 			cancelFn();
