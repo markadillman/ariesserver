@@ -988,6 +988,7 @@ function displayMessage(msg, okFn, cancelFn, useTextInput, hideCancelButton, def
 			//eventListenerMsgBtnOk = arguments.callee;
 			//this.removeEventListener("click",click1, false);
 			eventListenerMsgBtnOk.push(arguments.callee);
+			removeEventListeners();
 			messageDiv.style.display = "none";
 			okFn(initCoords.xcoord,initCoords.ycoord,textInputPassword);
 			//return;
@@ -1011,6 +1012,7 @@ function displayMessage(msg, okFn, cancelFn, useTextInput, hideCancelButton, def
 			//eventListenerMsgBtnCancel = arguments.callee;
 			//this.removeEventListener("click",click2,false);
 			eventListenerMsgBtnCancel.push(arguments.callee);
+			removeEventListeners();
 			messageDiv.style.display = "none";
 			cancelFn();
 			//return;
@@ -1037,6 +1039,7 @@ function displayMessage(msg, okFn, cancelFn, useTextInput, hideCancelButton, def
 			//eventListenerMsgBtnOk = arguments.callee;
 			//this.removeEventListener("click",click1, false);
 			eventListenerMsgBtnOk.push(arguments.callee);
+			removeEventListeners();
 			messageDiv.style.display = "none";
 			okFn(initCoords.xcoord,initCoords.ycoord);
 			//return;
@@ -1059,6 +1062,7 @@ function displayMessage(msg, okFn, cancelFn, useTextInput, hideCancelButton, def
 			//eventListenerMsgBtnCancel = arguments.callee;
 			//this.removeEventListener("click",click2,false);
 			eventListenerMsgBtnCancel.push(arguments.callee);
+			removeEventListeners();
 			messageDiv.style.display = "none";
 			cancelFn();
 			//return;
@@ -1082,13 +1086,11 @@ function displayMessage(msg, okFn, cancelFn, useTextInput, hideCancelButton, def
 		var tempEventOkBot = msgBtnOK.eventListener('click',function(){
 			console.log("callee");
 			console.log(arguments.callee);
+
 			//eventListenerMsgBtnOk = arguments.callee;
 			//this.removeEventListener("click",click1,false);
 			eventListenerMsgBtnOk.push(arguments.callee);
-			var msgOk = [];
-			var msgCancel = [];
-			msgOk.push = arguments.callee;
-			removeEventListener(msgOk,msgCancel);
+			removeEventListeners();
 			messageDiv.style.display = "none";
 			okFn();
 		},false);
@@ -1112,7 +1114,7 @@ function displayMessage(msg, okFn, cancelFn, useTextInput, hideCancelButton, def
 			//this.removeEventListener("click",click2,false);
 			eventListenerMsgBtnCancel.push(arguments.callee);
 			
-			removeEventListener();
+			removeEventListeners();
 			messageDiv.style.display = "none";
 			cancelFn();
 		},false);
