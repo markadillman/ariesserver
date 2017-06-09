@@ -1249,6 +1249,20 @@ function removeEventListeners(){
 			console.log(eventListenerPwdBtnPublic);
 		}
 	}
+	console.log("========POST========");
+	console.log("starting arrays for clear");
+	console.log("remove listeners ok");
+	console.log(eventListenerMsgBtnOk);
+	console.log("remove listenerscancel");
+	console.log(eventListenerMsgBtnCancel);
+	console.log("remove listenerspassword ok");
+	console.log(eventListenerPwdBtnOk);
+	console.log("remove listenerspassword cancel");
+	console.log(eventListenerPwdBtnCancel);
+	console.log("remove listenerspasswordSkip");
+	console.log(eventListenerPwdBtnSkip);
+	console.log("remove listenerspasswordPublic");
+	console.log(eventListenerPwdBtnPublic);
 }
 
 // default handlers for message box buttons
