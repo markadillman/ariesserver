@@ -2774,7 +2774,7 @@ function displayPassword(msg, okFn, textInputPassword, initCoords) {
 			if (!(eventListenerPwdBtnOk===undefined) && !(eventListenerPwdBtnOk===null)
 				&& !(allEvents === undefined) && !(allEvents === null)){
 				if (Object.prototype.toString.call(eventListenerPwdBtnOk)==='[object Array]'){
-					eventListenerPwdBtnOk.push(okPwNotext);
+					eventListenerPwdBtnOk.push(okPwNoText);
 					allEvents.push(okPwNoText);
 				}
 			}
