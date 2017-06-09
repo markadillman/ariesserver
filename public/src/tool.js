@@ -129,17 +129,21 @@ var eventListenerPwdBtnPublic= null;
 //adapted from code at http://stackoverflow.com/questions/8841138/remove-event-listener-in-java
 //credit to SO user TERMtm
 HTMLElement.prototype.eventListener = function(type, func, capture){
+	console.log("IN PROTO THIS");
+	console.log(this);
 	console.log("IN PROTO ARGUMENTS");
 	console.log(arguments);
 	console.log("IN PROTO ARGUMENTS[0]");
 	console.log(arguments[0]);
 	//a single object argument possessing the event listener will now remove that event listener
-	if(arguments[0] == "click" && (!arguments[0].nodeType)){
+	if(arguments.length === 0){
 		console.log("this weird stuff is happening");
 		return this.removeEventListener.apply(this,arguments);
 	}
-	//regular add function
-	this.addEventListener(type,func,capture);
+	else {
+		//regular add function
+		this.addEventListener(type,func,capture);
+	}
 	return arguments;
 }
 // end Mark's code
