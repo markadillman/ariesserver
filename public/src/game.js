@@ -441,37 +441,46 @@ Game =
 // loadPlatforms code moved here
 function loadPlatforms() {
 	// Platforms
-	Crafty.e('Platform, 2D, Canvas, Color')
+	Crafty.e('Platform, 2D, Canvas, Color, Collision')
 		.attr({x: 0, y: 250, w: 250, h: 10})
-		.color('green');
-	Crafty.e('Platform, 2D, Canvas, Color')
+		.color('green')
+        .collision();
+	Crafty.e('Platform, 2D, Canvas, Color, Collision')
 		.attr({x: 400, y: 300, w: 250, h: 10})
-		.color('green');
-	Crafty.e('Platform, 2D, Canvas, Color')
+		.color('green')
+        .collision();
+	Crafty.e('Platform, 2D, Canvas, Color, Collision')
 		.attr({x: 130, y: 450, w: 100, h: 10})
-		.color('green');
-	Crafty.e('Platform, 2D, Canvas, Color')
+		.color('green')
+        .collision();
+	Crafty.e('Platform, 2D, Canvas, Color, Collision')
 		.attr({x: 170, y: 540, w: 100, h: 10})
-		.color('green');
+		.color('green')
+        .collision();
 	// Toni added a platform under the spawn point
-	Crafty.e('Platform, 2D, Canvas, Color')
+	Crafty.e('Platform, 2D, Canvas, Color, Collision')
 		.attr({x: playerSpawnX - 35, y: playerSpawnY + 125, w: 100, h: 10})
-		.color('green');
+		.color('green')
+        .collision();
 	// Toni added platforms to allow us to get to the top 3 tiles for now
-	Crafty.e('Platform, 2D, Canvas, Color')
+	Crafty.e('Platform, 2D, Canvas, Color, Collision')
 		.attr({x: playerSpawnX - 50, y: playerSpawnY - 30, w: 100, h: 10})
-		.color('green');
-	Crafty.e('Platform, 2D, Canvas, Color')
+		.color('green')
+        .collision();
+	Crafty.e('Platform, 2D, Canvas, Color, Collision')
 		.attr({x: -1000, y: 10, w: 2000, h: 10})
-		.color('green');
+		.color('green')
+        .collision();
 	// Toni added a platform to allow us to get to the middle 2 outside tiles for now
-	Crafty.e('Platform, 2D, Canvas, Color')
+	Crafty.e('Platform, 2D, Canvas, Color, Collision')
 		.attr({x: -2000, y: canvasHeight - canvasEdge, w: 4000, h: 10})
-		.color('green');
+		.color('green')
+        .collision();
 	// Floor
-	Crafty.e('Platform, 2D, Canvas, Color')
+	Crafty.e('Platform, 2D, Canvas, Color, Collision')
 		.attr({x: -4000, y: 590, w: 8000, h: 10})
-		.color('green');
+		.color('green')
+        .collision();
 		
 	// set platform z between background and avatar
 	Crafty('Platform').each(function() {
@@ -499,7 +508,7 @@ function loadPlayer(argsocket) {
 	}
 	
 	// Player sprite
-	var player = Crafty.e('Player, 2D, Canvas, Color, Multiway, Jumper, Gravity')
+	var player = Crafty.e('Player, 2D, Canvas, Color, Multiway, Jumper, Gravity, Collision, WiredHitBox')
 		
 		// Initial position and size
 		// inside the hole in the tree
@@ -510,10 +519,27 @@ function loadPlayer(argsocket) {
 		// which required referencing Crafty's code for how Twoway works
 		.multiway({x: 200}, {RIGHT_ARROW: 0, LEFT_ARROW: 180})
 		// Set platforms to stop falling player
-		.gravity('Platform')
+		//.gravity('Platform')
 		.gravityConst(600)
 		// Bind spacebar to jump action
 		.jumper(400, [Crafty.keys.SPACE])
+
+        // Custom hitbox
+        .collision(new Crafty.polygon([0, 60, 15, 45, 30, 60]))
+        .debugStroke('white')
+        .checkHits('Platform')
+        .bind("EnterFrame", function(){
+            collision = this.hit("Platform");
+            if(collision)
+            {
+                // Collide only if player was not jumping up
+                if(this.dy >= 0)
+                {
+                    var target = collision[0].obj;
+                    this.y = target.y + this.h;
+                }
+            }
+        })
 
 		// Allow player to drop through platforms
 		.bind('KeyDown', function(e)
