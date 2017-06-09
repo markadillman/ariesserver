@@ -138,7 +138,7 @@ HTMLElement.prototype.eventListener = function(type, func, capture){
 		//regular add function
 		console.log("regular event add");
 		this.addEventListener(type,func,capture);
-		alLEvents.push(arguments[1]);
+		allEvents.push(arguments[1]);
 		console.log("all events in proto");
 		console.log(allEvents);
 	}
