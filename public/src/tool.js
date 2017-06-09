@@ -139,9 +139,9 @@ HTMLElement.prototype.eventListener = function(type, func, capture){
 	console.log("IN PROTO ARGUMENTS[1]");
 	console.log(arguments[1]);
 	//a single object argument possessing the event listener will now remove that event listener
-	if(!arguments[0] === "click"){
+	if(!(arguments[0] === "click")){
 		console.log("this weird stuff is happening");
-		return this.removeEventListener.apply(this,arguments);
+		return this.removeEventListener.apply(this,{'click',arguments[0],false};
 	}
 	else {
 		//regular add function
@@ -150,8 +150,8 @@ HTMLElement.prototype.eventListener = function(type, func, capture){
 		allEvents.push(arguments[1]);
 		console.log("all events in proto");
 		console.log(allEvents);
+		return arguments[1];
 	}
-	return arguments;
 }
 // end Mark's code
 
@@ -991,7 +991,7 @@ function displayMessage(msg, okFn, cancelFn, useTextInput, hideCancelButton, def
 	//remove previous event listeners so that they do not aggregate to multiple per push
 	console.log("MESSAGE");
 	console.log(msg);
-	//removeEventListeners();
+	removeEventListeners();
 	messageText.innerHTML = msg;
 	if (initCoords&&textInputPassword){
 		//this works because the truthiness of strings in Javascriprt. Both true and defined.
@@ -1015,6 +1015,7 @@ function displayMessage(msg, okFn, cancelFn, useTextInput, hideCancelButton, def
 			if (Object.prototype.toString.call(eventListenerMsgBtnOk) === '[object Array]')
 			{
 				eventListenerMsgBtnOk.push(tempEventOkTop);
+				allEvents.push(tempEventOkTop);
 				console.log("ok post bind");
 				console.log(eventListenerMsgBtnOk);
 			}
@@ -1037,7 +1038,8 @@ function displayMessage(msg, okFn, cancelFn, useTextInput, hideCancelButton, def
 		{
 			if (Object.prototype.toString.call(eventListenerMsgBtnCancel) === '[object Array]')
 			{
-				//eventListenerMsgBtnCancel.push(tempEventCancelTop);
+				eventListenerMsgBtnCancel.push(tempEventCancelTop);
+				allEvents.push(tempEventCancelTop);
 				console.log("cancel post bind");
 				console.log(eventListenerMsgBtnCancel);
 			}
@@ -1065,7 +1067,8 @@ function displayMessage(msg, okFn, cancelFn, useTextInput, hideCancelButton, def
 		{
 			if (Object.prototype.toString.call(eventListenerMsgBtnOk) === '[object Array]')
 			{
-				//eventListenerMsgBtnOk.push(tempEventOkMid);
+				eventListenerMsgBtnOk.push(tempEventOkMid);
+				allEvents.push(tempEventOkMid);
 				console.log("ok post bind");
 				console.log(eventListenerMsgBtnOk);
 			}
@@ -1088,7 +1091,8 @@ function displayMessage(msg, okFn, cancelFn, useTextInput, hideCancelButton, def
 		{
 			if (Object.prototype.toString.call(eventListenerMsgBtnCancel) === '[object Array]')
 			{
-				//eventListenerMsgBtnCancel.push(tempEventCancelMid);
+				eventListenerMsgBtnCancel.push(tempEventCancelMid);
+				allEvents.push(tempEventCancelMid);
 				console.log("cancel post bind");
 				console.log(eventListenerMsgBtnCancel);
 			}
@@ -1118,7 +1122,8 @@ function displayMessage(msg, okFn, cancelFn, useTextInput, hideCancelButton, def
 		{
 			if (Object.prototype.toString.call(eventListenerMsgBtnOk) === '[object Array]')
 			{
-				//eventListenerMsgBtnOk.push(tempEventOkBot);
+				eventListenerMsgBtnOk.push(tempEventOkBot);
+				allEvents.push(tempEventOkBot);
 				console.log("ok post bind");
 				console.log(eventListenerMsgBtnOk);
 			}
@@ -1141,7 +1146,8 @@ function displayMessage(msg, okFn, cancelFn, useTextInput, hideCancelButton, def
 		if (!(eventListenerMsgBtnCancel===null) || !(eventListenerMsgBtnCancel ===undefined)){
 			if (Object.prototype.toString.call(eventListenerMsgBtnCancel) === '[object Array]')
 			{
-				//eventListenerMsgBtnCancel.push(tempEventCancelBot);
+				eventListenerMsgBtnCancel.push(tempEventCancelBot);
+				allEvents.push(tempEventCancelBot);
 				console.log("cancel post bind");
 				console.log(eventListenerMsgBtnCancel);
 			}
@@ -1221,6 +1227,7 @@ function removeEventListeners(){
 			pwdBtnCancel.eventListener(allEvents[i]);
 			pwdBtnSkip.eventListener(allEvents[i]);
 			pwdBtnPublic.eventListener(allEvents[i]);
+			allEvents.splice(i,1);
 		}
 	}
 	if (eventListenerMsgBtnOk.length > 1){
