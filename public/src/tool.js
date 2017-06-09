@@ -128,7 +128,7 @@ var eventListenerPwdBtnPublic;
 //this will allow removal of unknown, dynamic event listeners, 
 //adapted from code at http://stackoverflow.com/questions/8841138/remove-event-listener-in-java
 //credit to SO user TERMtm
-/*HTMLElement.prototype.eventListener = function(type, func, capture){
+HTMLElement.prototype.eventListener = function(type, func, capture){
 	//a single object argument possessing the event listener will now remove that event listener
 	if(typeof arguments[0]== "object" && (!arguments[0].nodeType)){
 		console.log("this weird stuff is happening");
@@ -137,7 +137,7 @@ var eventListenerPwdBtnPublic;
 	//regular add function
 	this.addEventListener(type,func,capture);
 	return arguments;
-}*/
+}
 // end Mark's code
 
 // stop event propagation so forms don't actually submit
@@ -963,80 +963,104 @@ function doQuitToHomeScreen() {
 // also displays text input element if boolean argument is true
 // these functions should include: messageDiv.style.display = "none";
 function displayMessage(msg, okFn, cancelFn, useTextInput, hideCancelButton, defaultText, textInputPassword, initCoords) {
+	//remove previous event listeners so that they do not aggregate to multiple per push
 	console.log("MESSAGE");
 	console.log(msg);
-	console.log(msgBtnOK);
-	console.log(msgBtnCancel);
-	//remove previous event listeners so that they do not aggregate to multiple per push
-	//removeEventListeners();
+	removeEventListeners();
 	messageText.innerHTML = msg;
-	console.log("msgbtnok");
-	console.log(msgBtnOK);
 	if (initCoords&&textInputPassword){
 		//this works because the truthiness of strings in Javascriprt. Both true and defined.
-		console.log("first block");
-		msgBtnOK.addEventListener('click',function click1(){
+		//OK BUTTON
+		var tempEventOkTop = msgBtnOK.eventListener('click',function(){
 			console.log("callee");
 			console.log(arguments.callee);
 			onsole.log("this");
 			console.log(this);
 			eventListenerMsgBtnOk = arguments.callee;
-			this.removeEventListener("click",click1, false);
+			//this.removeEventListener("click",click1, false);
 			okFn(initCoords.xcoord,initCoords.ycoord,textInputPassword);
 			//return;
-		},false); 
-		msgBtnCancel.addEventListener('click',function click2(){
+		},false);
+		//add event to array
+		eventListenerMsgBtnOk.push(tempEventOkTop);
+		console.log("ok");
+		console.log(eventListenerMsgBtnOk);
+		//CANCEL BUTTON
+		var tempEventCancelTop = msgBtnCancel.eventListener('click',function(){
 			console.log("callee");
 			console.log(arguments.callee);
 			console.log("this");
 			console.log(this);
 			eventListenerMsgBtnCancel = arguments.callee;
-			this.removeEventListener("click",click2,false);
+			//this.removeEventListener("click",click2,false);
 			cancelFn();
 			//return;
 		},false);
+		eventListenerMsgBtnCancel.push(tempEventCancelTop);
+		console.log("cancel");
+		console.log(eventListenerMsgBtnCancel);
 		//return;
 	}
 	else if (initCoords) {
 		console.log("second block");
-		msgBtnOK.addEventListener('click',function click1(){
+		//OK BUTTON
+		var tempEventOkMid = msgBtnOK.eventListener('click',function(){
 			console.log("callee");
 			console.log(arguments.callee);
 			console.log("this");
 			console.log(this);
 			eventListenerMsgBtnOk = arguments.callee;
-			this.removeEventListener("click",click1, false);
+			//this.removeEventListener("click",click1, false);
 			okFn(initCoords.xcoord,initCoords.ycoord);
 			//return;
 		},false);
-		msgBtnCancel.addEventListener('click',function click2(){
+		//add event to array 
+		eventListenerMsgBtnOk.push(tempEventOkMid);
+		console.log("ok");
+		console.log(eventListenerMsgBtnOk);
+		//CANCEL BUTTON
+		var tempEventCancelMid = msgBtnCancel.eventListener('click',function(){
 			console.log("callee");
 			console.log(arguments.callee);
 
 			eventListenerMsgBtnCancel = arguments.callee;
-			this.removeEventListener("click",click2,false);
+			//this.removeEventListener("click",click2,false);
 			cancelFn();
 			//return;
 		},false);
+		//add event to array 
+		eventListenerMsgBtnCancel.push(tempEventCancelMid);
+		console.log("cancel");
+		console.log(eventListenerMsgBtnCancel);
 		//return;
 	}
 	else
 	{
 		console.log("third block");
-		msgBtnOK.addEventListener('click',function click1(){
+		//OK BUTTON
+		var tempEventOkBot = msgBtnOK.eventListener('click',function(){
 			console.log("callee");
 			console.log(arguments.callee);
 			eventListenerMsgBtnOk = arguments.callee;
-			this.removeEventListener("click",click1,false);
+			//this.removeEventListener("click",click1,false);
 			okFn(); 
 		},false);
-		msgBtnCancel.addEventListener('click',function click2(){
+		//add event to array 
+		eventListenerMsgBtnOk.push(tempEventOkBot);
+		console.log("ok");
+		console.log(eventListenerMsgBtnOk);
+		//CANCEL BUTTON
+		var tempEventCancelBot = msgBtnCancel.eventListener('click',function(){
 			console.log("callee");
 			console.log(arguments.callee);
 			eventListenerMsgBtnCancel = arguments.callee;
-			this.removeEventListener("click",click2,false);
+			//this.removeEventListener("click",click2,false);
 			cancelFn();
 		},false);
+		//add event to array 
+		eventListenerMsgBtnCancel.push(tempEventCancelBot);
+		console.log("cancel");
+		console.log(eventListenerMsgBtnCancel);
 	}
 	// use or hide text input element
 	if (useTextInput) { // show the text input element
@@ -1077,6 +1101,20 @@ function displayMessage(msg, okFn, cancelFn, useTextInput, hideCancelButton, def
 //every time on the first line of displayMessage or displayPassword to avoid eventListeners from
 //accumulating. Somewhat redundant with the new self-removing functions above.
 function removeEventListeners(){
+	console.log("starting arrays for clear");
+	console.log("ok");
+	console.log(eventListenerMsgBtnOk);
+	console.log("cancel");
+	console.log(eventListenerMsgBtnCancel);
+	console.log("password ok");
+	console.log(eventListenerPwdBtnOk);
+	console.log("password cancel");
+	console.log(eventListenerPwdBtnCancel);
+	console.log("passwordSkip");
+	console.log(eventListenerPwdBtnSkip);
+	console.log("passwordPublic");
+	console.log(eventListenerPwdBtnPublic);
+
 	var pwdBtnOK = document.getElementById('pwdBtnOK');
 	var pwdBtnSkip = document.getElementById('pwdBtnSkip');
 	var pwdBtnPublic = document.getElementById('pwdBtnPublic');
@@ -1090,12 +1128,66 @@ function removeEventListeners(){
 	}
 	//all nodes are gathered in reference-able variables. Now use the prototype that tracks them
 	//to remove all the event listeners regardless of what they are or what args they have.
-	msgBtnOK.eventListener(eventListenerMsgBtnOK);
-	msgBtnCancel.eventListener(eventListenerMsgBtnCancel);
-	pwdBtnOK.eventListener(eventListenerPwdBtnOk);
-	pwdBtnSkip.eventListener(eventListenerPwdBtnSkip);
-	pwdBtnCancel.eventListener(eventListenerPwdBtnCancel);
-	pwdBtnPublic.eventListener(eventListenerPwdBtnPublic);
+	if (eventListenerMsgBtnOk.length > 1){
+		for (var i = eventListenerMsgBtnOk; i >= 0 ; i = i + 1){
+			var tempnog = msgBtnOK.eventListener(eventListenerMsgBtnOk[i]);
+			eventListenerMsgBtnOk.splice(index,i);
+			console.log("tempnog");
+			console.log(tempnog);
+			console.log("okarray");
+			console.log(eventListenerMsgBtnOk);
+		}
+	}
+	if (eventListenerMsgBtnCancel.length > 1){
+		for (var i = eventListenerMsgBtnCancel; i >= 0; i = i - 1){
+			var tempnog = msgBtnCancel.eventListener(eventListenerMsgBtnCancel[i]);
+			eventListenerMsgBtnCancel.splice(index,i);
+			console.log("tempnog");
+			console.log(tempnog);
+			console.log("cancelarray");
+			console.log(eventListenerMsgBtnCancel);
+		}
+	}
+	if (eventListenerPwdBtnOk.length > 1){
+		for (var i = eventListenerPwdBtnOk; i >= 0 ; i = i - 1){
+			var tempnog = pwdBtnOk.eventListener(eventListenerPwdBtnOk);
+			eventListenerPwdBtnOk.splice(index,i);
+			console.log("tempnog");
+			console.log(tempnog);
+			console.log("pwdokarray");
+			console.log(eventListenerPwdBtnOk);
+		}
+	}
+	if (eventListenerPwdBtnCancel.length > 1){
+		for (var i = eventListenerPwdBtnCancel; i >= 0 ; i = i - 1){
+			var tempnog = pwdBtnCancel.eventListener(eventListenerPwdBtnCancel[i]);
+			eventListenerPwdBtnCancel.splice(index,i);
+			console.log("tempnog");
+			console.log(tempnog);
+			console.log("pwdokarray");
+			console.log(eventListenerPwdBtnCancel);
+		}
+	}
+	if (eventListenerPwdBtnSkip.length > 1){
+		for (var i = (eventListenerPwdBtnSkip.length - 1); i >= 0 ; i = i - 1){
+			eventListenerPwdBtnSkip.splice(index,i);
+			var tempnog = pwdBtnSkip.eventListener(eventListenerPwdBtnSkip[i]);
+			console.log("tempnog");
+			console.log(tempnog);
+			console.log("pwdokarray");
+			console.log(eventListenerPwdBtnSkip);
+		}
+	}
+	if (eventListenerPwdBtnPublic.length > 1){
+		for (var i = (eventListenerPwdBtnPublic.length - 1); i >= 0 ; i = i - 1){
+			eventListenerPwdBtnPublic.splice(index,i);
+			var tempnog = pwdBtnPublic.eventListener(eventListenerPwdBtnPublic[i]);
+			console.log("tempnog");
+			console.log(tempnog);
+			console.log("pwdokarray");
+			console.log(eventListenerPwdBtnPublic);
+		}
+	}
 }
 
 // default handlers for message box buttons
@@ -1218,6 +1310,13 @@ function panDownButton() {
 // takes in the svg string of the avatar being edited
 // myAvatarString == "" means blank/new avatar
 function doAvatarEdit(myAvatarString) {
+	//recreate global arrays
+	eventListenerMsgBtnOk = new Array();
+	eventListenerMsgBtnCancel = new Array();
+	eventListenerPwdBtnOk = new Array();
+	eventListenerPwdBtnSkip = new Array();
+	eventListenerPwdBtnCancel = new Array();
+	eventListenerPwdBtnPublic = new Array();
 	
 	// clear out everything from drawing area just in case
 	svgClearAll();
@@ -1451,6 +1550,13 @@ function passwordApproved(xTile,yTile,password){
 // if the player has access to the current tile
 // Mark had to add args
 function doTileEdit(currentX, currentY) {
+	//reset event binder arrays on the global
+	eventListenerMsgBtnOk = new Array();
+	eventListenerMsgBtnCancel = new Array();
+	eventListenerPwdBtnOk = new Array();
+	eventListenerPwdBtnSkip = new Array();
+	eventListenerPwdBtnCancel = new Array();
+	eventListenerPwdBtnPublic = new Array();
 	// make sure xTile and yTile are set correctly
 	if (currentX && currentY) {
 		xTile = currentX;
