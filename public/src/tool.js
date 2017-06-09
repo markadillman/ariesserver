@@ -986,6 +986,7 @@ function displayMessage(msg, okFn, cancelFn, useTextInput, hideCancelButton, def
 			console.log(this);
 			//eventListenerMsgBtnOk = arguments.callee;
 			//this.removeEventListener("click",click1, false);
+			eventListenerMsgBtnOk.push(arguments.callee);
 			messageDiv.style.display = "none";
 			okFn(initCoords.xcoord,initCoords.ycoord,textInputPassword);
 			//return;
@@ -1008,6 +1009,7 @@ function displayMessage(msg, okFn, cancelFn, useTextInput, hideCancelButton, def
 			console.log(this);
 			//eventListenerMsgBtnCancel = arguments.callee;
 			//this.removeEventListener("click",click2,false);
+			eventListenerMsgBtnCancel.push(arguments.callee);
 			messageDiv.style.display = "none";
 			cancelFn();
 			//return;
@@ -1016,7 +1018,7 @@ function displayMessage(msg, okFn, cancelFn, useTextInput, hideCancelButton, def
 		{
 			if (Object.prototype.toString.call(eventListenerMsgBtnCancel) === '[object Array]')
 			{
-				eventListenerMsgBtnCancel.push(tempEventCancelTop);
+				//eventListenerMsgBtnCancel.push(tempEventCancelTop);
 				console.log("cancel post bind");
 				console.log(eventListenerMsgBtnCancel);
 			}
@@ -1033,6 +1035,7 @@ function displayMessage(msg, okFn, cancelFn, useTextInput, hideCancelButton, def
 			console.log(this);
 			//eventListenerMsgBtnOk = arguments.callee;
 			//this.removeEventListener("click",click1, false);
+			eventListenerMsgBtnOk.push(arguments.callee);
 			messageDiv.style.display = "none";
 			okFn(initCoords.xcoord,initCoords.ycoord);
 			//return;
@@ -1042,7 +1045,7 @@ function displayMessage(msg, okFn, cancelFn, useTextInput, hideCancelButton, def
 		{
 			if (Object.prototype.toString.call(eventListenerMsgBtnOk) === '[object Array]')
 			{
-				eventListenerMsgBtnOk.push(tempEventOkMid);
+				//eventListenerMsgBtnOk.push(tempEventOkMid);
 				console.log("ok post bind");
 				console.log(eventListenerMsgBtnOk);
 			}
@@ -1054,6 +1057,7 @@ function displayMessage(msg, okFn, cancelFn, useTextInput, hideCancelButton, def
 
 			//eventListenerMsgBtnCancel = arguments.callee;
 			//this.removeEventListener("click",click2,false);
+			eventListenerMsgBtnCancel.push(arguments.callee);
 			messageDiv.style.display = "none";
 			cancelFn();
 			//return;
@@ -1063,7 +1067,7 @@ function displayMessage(msg, okFn, cancelFn, useTextInput, hideCancelButton, def
 		{
 			if (Object.prototype.toString.call(eventListenerMsgBtnCancel) === '[object Array]')
 			{
-				eventListenerMsgBtnCancel.push(tempEventCancelMid);
+				//eventListenerMsgBtnCancel.push(tempEventCancelMid);
 				console.log("cancel post bind");
 				console.log(eventListenerMsgBtnCancel);
 			}
@@ -1079,6 +1083,7 @@ function displayMessage(msg, okFn, cancelFn, useTextInput, hideCancelButton, def
 			console.log(arguments.callee);
 			//eventListenerMsgBtnOk = arguments.callee;
 			//this.removeEventListener("click",click1,false);
+			eventListenerMsgBtnOk.push(arguments.callee);
 			messageDiv.style.display = "none";
 			okFn(); 
 		},false);
@@ -1089,7 +1094,7 @@ function displayMessage(msg, okFn, cancelFn, useTextInput, hideCancelButton, def
 		{
 			if (Object.prototype.toString.call(eventListenerMsgBtnOk) === '[object Array]')
 			{
-				eventListenerMsgBtnOk.push(tempEventOkBot);
+				//eventListenerMsgBtnOk.push(tempEventOkBot);
 				console.log("ok post bind");
 				console.log(eventListenerMsgBtnOk);
 			}
@@ -1100,6 +1105,7 @@ function displayMessage(msg, okFn, cancelFn, useTextInput, hideCancelButton, def
 			console.log(arguments.callee);
 			//eventListenerMsgBtnCancel = arguments.callee;
 			//this.removeEventListener("click",click2,false);
+			eventListenerMsgBtnCancel.push(arguments.callee);
 			messageDiv.style.display = "none";
 			cancelFn();
 		},false);
@@ -1109,7 +1115,7 @@ function displayMessage(msg, okFn, cancelFn, useTextInput, hideCancelButton, def
 		if (!(eventListenerMsgBtnCancel===null) || !(eventListenerMsgBtnCancel ===undefined)){
 			if (Object.prototype.toString.call(eventListenerMsgBtnCancel) === '[object Array]')
 			{
-				eventListenerMsgBtnCancel.push(tempEventCancelBot);
+				//eventListenerMsgBtnCancel.push(tempEventCancelBot);
 				console.log("cancel post bind");
 				console.log(eventListenerMsgBtnCancel);
 			}
@@ -1185,7 +1191,7 @@ function removeEventListeners(){
 		for (var i = (eventListenerMsgBtnOk.length-1); i >= 0 ; i = i - 1){
 			var tempnog = msgBtnOK.eventListener(eventListenerMsgBtnOk[i][1]);
 			console.log("function");
-			console.log(eventListenerMsgBtnOk[i][1]);
+			console.log(eventListenerMsgBtnOk[i]);
 			eventListenerMsgBtnOk.splice(i,1);
 			console.log("tempnog");
 			console.log(tempnog);
@@ -1197,7 +1203,7 @@ function removeEventListeners(){
 		for (var i = (eventListenerMsgBtnCancel.length-1); i >= 0; i = i - 1){
 			var tempnog = msgBtnCancel.eventListener(eventListenerMsgBtnCancel[i][1]);
 			console.log("function");
-			console.log(eventListenerMsgBtnCancel[i][1]);
+			console.log(eventListenerMsgBtnCancel[i]);
 			eventListenerMsgBtnCancel.splice(i,1);
 			console.log("tempnog");
 			console.log(tempnog);
@@ -1209,7 +1215,7 @@ function removeEventListeners(){
 		for (var i = (eventListenerPwdBtnOk.length-1); i >= 0 ; i = i - 1){
 			var tempnog = pwdBtnOk.eventListener(eventListenerPwdBtnOk[i][1]);
 			console.log("function");
-			console.log(eventListenerPwdBtnOk[i][1]);
+			console.log(eventListenerPwdBtnOk[i]);
 			eventListenerPwdBtnOk.splice(i,1);
 			console.log("tempnog");
 			console.log(tempnog);
@@ -1221,11 +1227,11 @@ function removeEventListeners(){
 		for (var i = (eventListenerPwdBtnCancel.length-1); i >= 0 ; i = i - 1){
 			var tempnog = pwdBtnCancel.eventListener(eventListenerPwdBtnCancel[i][1]);
 			console.log("function");
-			console.log(eventListenerPwdBtnCancel[i][1]);
+			console.log(eventListenerPwdBtnCancel[i]);
 			eventListenerPwdBtnCancel.splice(i,1);
 			console.log("tempnog");
 			console.log(tempnog);
-			console.log("pwdokarray");
+			console.log("pwdcancelarray");
 			console.log(eventListenerPwdBtnCancel);
 		}
 	}
@@ -1233,11 +1239,11 @@ function removeEventListeners(){
 		for (var i = (eventListenerPwdBtnSkip.length - 1); i >= 0 ; i = i - 1){
 			var tempnog = pwdBtnSkip.eventListener(eventListenerPwdBtnSkip[i][1]);
 			console.log("function");
-			console.log(eventListenerPwdBtnSkip[i][1]);
+			console.log(eventListenerPwdBtnSkip[i]);
 			eventListenerPwdBtnSkip.splice(i,1);
 			console.log("tempnog");
 			console.log(tempnog);
-			console.log("pwdokarray");
+			console.log("pwdskiparray");
 			console.log(eventListenerPwdBtnSkip);
 		}
 	}
@@ -1245,11 +1251,11 @@ function removeEventListeners(){
 		for (var i = (eventListenerPwdBtnPublic.length - 1); i >= 0 ; i = i - 1){
 			var tempnog = pwdBtnPublic.eventListener(eventListenerPwdBtnPublic[i][1]);
 			console.log("function");
-			console.log(eventListenerPwdBtnPublic[i][1]);
+			console.log(eventListenerPwdBtnPublic[i]);
 			eventListenerPwdBtnPublic.splice(i,1);
 			console.log("tempnog");
 			console.log(tempnog);
-			console.log("pwdokarray");
+			console.log("pwdpublicarray");
 			console.log(eventListenerPwdBtnPublic);
 		}
 	}
