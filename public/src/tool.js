@@ -1166,7 +1166,7 @@ function displayMessage(msg, okFn, cancelFn, useTextInput, hideCancelButton, def
 //MARK ADDED: This is a way to remove all event listeners from all buttons. This should be done
 //every time on the first line of displayMessage or displayPassword to avoid eventListeners from
 //accumulating. Somewhat redundant with the new self-removing functions above.
-function removeEventListeners(msgOk,msgCancel,pwdOk,pwdCancel,pwdSkip,pwdPublic){
+function removeEventListeners(){
 	console.log("starting arrays for clear");
 	console.log("remove listeners ok");
 	console.log(eventListenerMsgBtnOk);
@@ -1206,7 +1206,7 @@ function removeEventListeners(msgOk,msgCancel,pwdOk,pwdCancel,pwdSkip,pwdPublic)
 			console.log(eventListenerMsgBtnOk);
 		}
 	}
-	if (msgOk.length > 1){
+	/*if (msgOk.length > 1){
 		for (var i = (msgOk.length-1); i >= 0 ; i = i - 1){
 			var tempnog = msgBtnOK.eventListener(msgOk[i]);
 			console.log("function");
@@ -1217,7 +1217,7 @@ function removeEventListeners(msgOk,msgCancel,pwdOk,pwdCancel,pwdSkip,pwdPublic)
 			console.log("okargarray");
 			console.log(msgOk);
 		}
-	}
+	}*/
 	if (eventListenerMsgBtnCancel.length > 1){
 		for (var i = (eventListenerMsgBtnCancel.length-1); i >= 0; i = i - 1){
 			var tempnog = msgBtnCancel.eventListener(eventListenerMsgBtnCancel[i]);
@@ -1230,7 +1230,7 @@ function removeEventListeners(msgOk,msgCancel,pwdOk,pwdCancel,pwdSkip,pwdPublic)
 			console.log(eventListenerMsgBtnCancel);
 		}
 	}
-	if (msgCancel.length > 1){
+	/*if (msgCancel.length > 1){
 		for (var i = (msgCancel.length-1); i >= 0 ; i = i - 1){
 			var tempnog = msgBtnCancel.eventListener(msgCancel[i]);
 			console.log("function");
@@ -1241,7 +1241,7 @@ function removeEventListeners(msgOk,msgCancel,pwdOk,pwdCancel,pwdSkip,pwdPublic)
 			console.log("cancelargarray");
 			console.log(msgCancel);
 		}
-	}
+	}*/
 	if (eventListenerPwdBtnOk.length > 1){
 		for (var i = (eventListenerPwdBtnOk.length-1); i >= 0 ; i = i - 1){
 			var tempnog = pwdBtnOk.eventListener(eventListenerPwdBtnOk[i]);
