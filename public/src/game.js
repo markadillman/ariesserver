@@ -1239,6 +1239,9 @@ function turnOnDeleteSubmitButtons() {
 	Crafty('mySubmitButton').addComponent('myButton');
 }
 function turnOffViewButtons() {
+	if (verboseDebugging){
+		console.log("buttons unbound");
+	}
 	// turn button functionality off
 	Crafty('myAvatarButton').unbind('Click');
 	Crafty('myAvatarButton').removeComponent('myButton');
@@ -1246,6 +1249,11 @@ function turnOffViewButtons() {
 	Crafty('myLibraryButton').removeComponent('myButton');	
 }
 function turnOnViewButtons() {
+	removeEventListeners();
+	if (verboseDebugging){
+		console.log("buttons bound again");
+	}
+	Crafty
 	// turn button functionality back on
 	Crafty('myAvatarButton').bind('Click', myAvatarButtonClick);
 	Crafty('myAvatarButton').addComponent('myButton');
