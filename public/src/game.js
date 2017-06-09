@@ -508,7 +508,7 @@ function loadPlayer(argsocket) {
 	}
 	
 	// Player sprite
-	var player = Crafty.e('Player, 2D, Canvas, Color, Multiway, Jumper, Gravity, Collision, WiredHitBox')
+	var player = Crafty.e('Player, 2D, Canvas, Gravity, Jumper, Multiway')
 		
 		// Initial position and size
 		// inside the hole in the tree
@@ -519,27 +519,9 @@ function loadPlayer(argsocket) {
 		// which required referencing Crafty's code for how Twoway works
 		.multiway({x: 200}, {RIGHT_ARROW: 0, LEFT_ARROW: 180})
 		// Set platforms to stop falling player
-		//.gravity('Platform')
-		.gravityConst(600)
-		// Bind spacebar to jump action
-		.jumper(400, [Crafty.keys.SPACE])
-
-        // Custom hitbox
-        .collision(new Crafty.polygon([0, 60, 15, 45, 30, 60]))
-        .debugStroke('white')
-        .checkHits('Platform')
-        .bind("EnterFrame", function(){
-            collision = this.hit("Platform");
-            if(collision)
-            {
-                // Collide only if player was not jumping up
-                if(this.dy >= 0)
-                {
-                    var target = collision[0].obj;
-                    this.y = target.y + this.h;
-                }
-            }
-        })
+		.gravity()
+        .gravityConst(600)
+        .jumper(400, [Crafty.keys.SPACE])
 
 		// Allow player to drop through platforms
 		.bind('KeyDown', function(e)
@@ -556,8 +538,8 @@ function loadPlayer(argsocket) {
 			// Toni added mode conditions below b/c it was still using down arrow while in art mode
 			if(e.key == Crafty.keys.DOWN_ARROW && mode == gameMode && playing == true)
 			{
-				this.antigravity();
-				this.gravity('Platform');
+				//this.antigravity();
+				//this.gravity('Platform');
 			}
 		})
 		.bind('KeyUp', function(e)
@@ -565,7 +547,7 @@ function loadPlayer(argsocket) {
 			// Toni added mode conditions below b/c it was still using down arrow while in art mode
 			if(e.key == Crafty.keys.DOWN_ARROW && mode == gameMode && playing == true)
 			{
-				this.gravity('Platform');
+				//this.gravity('Platform');
 			}
 
 			// start Toni's code
@@ -821,6 +803,23 @@ function loadPlayer(argsocket) {
 			// call with true here so doPlayerMove handles the pan itself
 			doPlayerMove(this.x, this.y, true)
 		});
+
+	// Gravity boots!
+    var gravityBoots = Crafty.e("2D, Collision, GravityBoots")
+            .attr({x: xCoord, y: yCoord, w: 30, h: 10})
+            .bind('EnterFrame', function(){
+                collision = this.hit('Platform');
+                if(collision)
+                {
+                    if(player.dy >= 0)
+                    {
+                        var target = collision[0].obj;
+                        player.y = target.y + player.h;
+                    }
+                }
+            });
+
+    player.attach(gravityBoots);
 		
 	// start Toni's code
 	// generate a URL based on currently selected avatar
