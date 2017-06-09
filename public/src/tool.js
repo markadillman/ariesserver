@@ -139,7 +139,7 @@ HTMLElement.prototype.eventListener = function(type, func, capture){
 	console.log("IN PROTO ARGUMENTS[1]");
 	console.log(arguments[1]);
 	//a single object argument possessing the event listener will now remove that event listener
-	if(arguments.length === 0){
+	if(!arguments[0] === "click"){
 		console.log("this weird stuff is happening");
 		return this.removeEventListener.apply(this,arguments);
 	}
@@ -455,7 +455,7 @@ function initHTML() {
 		eventListenerPwdBtnCancel = new Array();
 		eventListenerPwdBtnPublic = new Array();
 		allEvents = [];
-		
+
 	// set the page header (defaults to avatar mode since that's used first)
 	pageHeader = document.getElementById("drawingToolHeader");
 	pageHeader.innerHTML = avatarHeader;
