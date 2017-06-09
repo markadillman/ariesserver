@@ -142,6 +142,7 @@ HTMLElement.prototype.eventListener = function(type, func, capture){
 	}
 	else {
 		//regular add function
+		console.log("regular event add");
 		this.addEventListener(type,func,capture);
 	}
 	return arguments;
