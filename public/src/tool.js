@@ -1304,7 +1304,7 @@ function removeEventListeners(){
 	}
 	if (eventListenerPwdBtnSkip.length > 1){
 		for (var i = (eventListenerPwdBtnSkip.length - 1); i >= 0 ; i = i - 1){
-			var tempnog = pwdBtnSkip.eventListener(eventListenerPwdBtnSkip[i][1]);
+			var tempnog = pwdBtnSkip.eventListener(eventListenerPwdBtnSkip[i]);
 			console.log("function");
 			console.log(eventListenerPwdBtnSkip[i]);
 			eventListenerPwdBtnSkip.splice(i,1);
@@ -1316,7 +1316,7 @@ function removeEventListeners(){
 	}
 	if (eventListenerPwdBtnPublic.length > 1){
 		for (var i = (eventListenerPwdBtnPublic.length - 1); i >= 0 ; i = i - 1){
-			var tempnog = pwdBtnPublic.eventListener(eventListenerPwdBtnPublic[i][1]);
+			var tempnog = pwdBtnPublic.eventListener(eventListenerPwdBtnPublic[i]);
 			console.log("function");
 			console.log(eventListenerPwdBtnPublic[i]);
 			eventListenerPwdBtnPublic.splice(i,1);
@@ -2738,7 +2738,7 @@ function pwUpdateError(){
 // initCoords similarly are present only to pass along to event-driven subfunctions.
 // these functions should include: passwordDiv.style.display = "none";
 function displayPassword(msg, okFn, textInputPassword, initCoords) {
-	//removeEventListeners();
+	removeEventListeners();
 	messageDiv.style.display = "none";
 	var pwdBtnOK = document.getElementById('pwdBtnOK');
 	var pwdBtnCancel = document.getElementById('pwdBtnCancel');
@@ -2753,55 +2753,120 @@ function displayPassword(msg, okFn, textInputPassword, initCoords) {
 	if (initCoords){
 		if (textInputPassword) {
 			//this works because the truthiness of strings in Javascriprt. Both true and defined.
-			pwdBtnOK.addEventListener('click',function clicked3(){
-				this.removeEventListener('click',clicked3,false);
+			var okPwText = pwdBtnOK.eventListener('click',function(){
+				removeEventListeners();
 				okFn(initCoords.xcoord,initCoords.ycoord,textInputPassword);
-				},false); 
+			},false); 
+			if (!(eventListenerPwdBtnOk===undefined) && !(eventListenerPwdBtnOk===null)
+				&& !(allEvents === undefined) && !(allEvents === null)){
+				if (Object.prototype.toString.call(eventListenerPwdBtnOk)==='[object Array]'){
+					eventListenerPwdBtnOk.push(okPwText);
+					allEvents.push(okPwText);
+				}
+			}
 		}
 		else 
 		{
-			pwdBtnOK.addEventListener('click',function clicked3(){
-				this.removeEventListener('click',clicked3,false);
+			var okPwNoText = pwdBtnOK.addEventListener('click',function(){
+				removeEventListeners();
 				okFn(initCoords.xcoord,initCoords.ycoord);
 			},false);
+			if (!(eventListenerPwdBtnOk===undefined) && !(eventListenerPwdBtnOk===null)
+				&& !(allEvents === undefined) && !(allEvents === null)){
+				if (Object.prototype.toString.call(eventListenerPwdBtnOk)==='[object Array]'){
+					eventListenerPwdBtnOk.push(okPwNotext);
+					allEvents.push(okPwNoText);
+				}
+			}
 		}
 		//if you cancel, you will go back to the editing screen
-		pwdBtnCancel.addEventListener('click',function clicked4(){
-			this.removeEventListener('click',clicked4,false);
+		var cancelPw = pwdBtnCancel.addEventListener('click',function(){
+			removeEventListeners();
 			removePrompt();
 			},false);
+			if (!(eventListenerPwdBtnCancel===undefined) && !(eventListenerPwdBtnCancel===null)
+				&& !(allEvents === undefined) && !(allEvents === null)){
+				if (Object.prototype.toString.call(eventListenerPwdBtnOk)==='[object Array]'){
+					eventListenerPwdBtnOk.push(cancelPw);
+					allEvents.push(cancelPw);
+				}
+			}
 		//if you want to keep the same password, you are done editing. back to gameplay.
-		pwdBtnSkip.addEventListener('click',function clicked5(){
-			this.removeEventListener('click',clicked5,false);
+		var skipPw = pwdBtnSkip.addEventListener('click',function(){
+			removeEventListeners();
 			completeEdit();
 			},false); 
+			if (!(eventListenerPwdBtnSkip===undefined) && !(eventListenerPwdBtnSkip===null)
+				&& !(allEvents === undefined) && !(allEvents === null)){
+				if (Object.prototype.toString.call(eventListenerPwdBtnOk)==='[object Array]'){
+					eventListenerPwdBtnOk.push(skipPw);
+					allEvents.push(skipPw);
+				}
+			}
 		//if you want to keep public, explicitly set password to ""
-		pwdBtnPublic.addEventListener('click',function clicked6(){
+		var publicPw = pwdBtnPublic.addEventListener('click',function(){
 			if (verboseDebugging){
 				console.log("pwdBtnPublic pressed");
 			}
-			this.removeEventListener('click',clicked6,false);
+			removeEventListeners();
 			passwordDiv.style.display = "none";
 			//no pw argument will auto 
 			submitNewPassword(initCoords.xcoord,initCoords.ycoord,textInputPassword,null);
 			},false);
+			if (!(eventListenerPwdBtnPublic===undefined) && !(eventListenerPwdBtnPublic===null)
+				&& !(allEvents === undefined) && !(allEvents === null)){
+				if (Object.prototype.toString.call(eventListenerPwdBtnOk)==='[object Array]'){
+					eventListenerPwdBtnOk.push(publicPw);
+					allEvents.push(publicPw);
+				}
+			}
 	} else {
 		//should never get here but must be present to remove a borked event listener
-		msgBtnOK.addEventListener('click',function clicked3(){
-			this.removeEventListener('click',clicked3,false);
-			},false);
-		msgBtnCancel.addEventListener('click',function clicked4(){
-			this.removeEventListener('click',clicked4,false);
+		var okNoCoords = pwdBtnOK.addEventListener('click',function(){
+			removeEventListeners();
 			removePrompt();
 			},false);
-		pwdBtnSkip.addEventListener('click',function clicked5(){
-			this.removeEventListener('click',clicked5,false);
+			if (!(eventListenerPwdBtnOk===undefined) && !(eventListenerPwdBtnOk===null)
+				&& !(allEvents === undefined) && !(allEvents === null)){
+				if (Object.prototype.toString.call(eventListenerPwdBtnOk)==='[object Array]'){
+					eventListenerPwdBtnOk.push(okNoCoords);
+					allEvents.push(okNoCoords);
+				}
+			}
+		var cancelNoCoords = pwdBtnCancel.addEventListener('click',function(){
+			removeEventListeners();
+			removePrompt();
+			},false);
+			if (!(eventListenerPwdBtnCancel===undefined) && !(eventListenerPwdBtnCancel===null)
+				&& !(allEvents === undefined) && !(allEvents === null)){
+				if (Object.prototype.toString.call(eventListenerPwdBtnOk)==='[object Array]'){
+					eventListenerPwdBtnCancel.push(cancelNoCoords);
+					allEvents.push(cancelNoCoords);
+				}
+			}
+		var skipNoCoords = pwdBtnSkip.addEventListener('click',function(){
+			removeEventListeners();
 			completeEdit();
 			},false);
-		pwdBtnPublic.addEventListener('click',function clicked6(){
+			if (!(eventListenerPwdBtnSkip===undefined) && !(eventListenerPwdBtnSkip===null)
+				&& !(allEvents === undefined) && !(allEvents === null)){
+				if (Object.prototype.toString.call(eventListenerPwdBtnOk)==='[object Array]'){
+					eventListenerPwdBtnSkip.push(skipNoCoords);
+					allEvents.push(skipNoCoords);
+				}
+			}
+		var publicNoCoords = pwdBtnPublic.addEventListener('click',function(){
 			passwordDiv.style.display = "none";
-			this.removeEventListener('click',clicked5,false);
+			removeEventListeners();
 			},false);
+			if (!(eventListenerPwdBtnPublic===undefined) && !(eventListenerPwdBtnPublic===null)
+				 && !(allEvents === undefined) && !(allEvents === null))
+			{
+				if (Object.prototype.toString.call(eventListenerPwdBtnOk)==='[object Array]'){
+					eventListenerPwdBtnPublic.push(publicNoCoords);
+					allEvents.push(publicNoCoords);
+				}
+			}
 	}
 	passwordDiv.style.display = "block";
 }

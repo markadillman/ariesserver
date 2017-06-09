@@ -1226,6 +1226,8 @@ function toggleButtonsOnNew() {
 			turnOnEnterButton();
 		}
 	}
+	//MARK ADDED
+	turnOnViewButtons();
 }
 function turnOffEnterButton() {
 	// turn off the "Enter the Blank" button
