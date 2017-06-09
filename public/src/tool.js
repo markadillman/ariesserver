@@ -119,12 +119,12 @@ var svgAppend = "</svg>";
 var passwordReprompt = false;
 const passwordReenterPrompt = "Please re-enter your tile's password to submit your edits.";
 //this will contain references to all specific button event listeners
-var eventListenerMsgBtnOK;
-var eventListenerMsgBtnCancel;
-var eventListenerPwdBtnOk;
-var eventListenerPwdBtnSkip;
-var eventListenerPwdBtnCancel;
-var eventListenerPwdBtnPublic;
+var eventListenerMsgBtnOK = null;
+var eventListenerMsgBtnCancel = null;
+var eventListenerPwdBtnOk= null;
+var eventListenerPwdBtnSkip= null;
+var eventListenerPwdBtnCancel= null;
+var eventListenerPwdBtnPublic= null;
 //this will allow removal of unknown, dynamic event listeners, 
 //adapted from code at http://stackoverflow.com/questions/8841138/remove-event-listener-in-java
 //credit to SO user TERMtm
