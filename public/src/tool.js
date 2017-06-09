@@ -978,6 +978,7 @@ function displayMessage(msg, okFn, cancelFn, useTextInput, hideCancelButton, def
 			console.log(this);
 			//eventListenerMsgBtnOk = arguments.callee;
 			//this.removeEventListener("click",click1, false);
+			messageDiv.style.display = "none";
 			okFn(initCoords.xcoord,initCoords.ycoord,textInputPassword);
 			//return;
 		},false);
@@ -999,6 +1000,7 @@ function displayMessage(msg, okFn, cancelFn, useTextInput, hideCancelButton, def
 			console.log(this);
 			//eventListenerMsgBtnCancel = arguments.callee;
 			//this.removeEventListener("click",click2,false);
+			messageDiv.style.display = "none";
 			cancelFn();
 			//return;
 		},false);
@@ -1023,6 +1025,7 @@ function displayMessage(msg, okFn, cancelFn, useTextInput, hideCancelButton, def
 			console.log(this);
 			//eventListenerMsgBtnOk = arguments.callee;
 			//this.removeEventListener("click",click1, false);
+			messageDiv.style.display = "none";
 			okFn(initCoords.xcoord,initCoords.ycoord);
 			//return;
 		},false);
@@ -1043,6 +1046,7 @@ function displayMessage(msg, okFn, cancelFn, useTextInput, hideCancelButton, def
 
 			//eventListenerMsgBtnCancel = arguments.callee;
 			//this.removeEventListener("click",click2,false);
+			messageDiv.style.display = "none";
 			cancelFn();
 			//return;
 		},false);
@@ -1065,8 +1069,9 @@ function displayMessage(msg, okFn, cancelFn, useTextInput, hideCancelButton, def
 		var tempEventOkBot = msgBtnOK.eventListener('click',function(){
 			console.log("callee");
 			console.log(arguments.callee);
-			eventListenerMsgBtnOk = arguments.callee;
+			//eventListenerMsgBtnOk = arguments.callee;
 			//this.removeEventListener("click",click1,false);
+			messageDiv.style.display = "none";
 			okFn(); 
 		},false);
 		//add event to array 
@@ -1083,8 +1088,9 @@ function displayMessage(msg, okFn, cancelFn, useTextInput, hideCancelButton, def
 		var tempEventCancelBot = msgBtnCancel.eventListener('click',function(){
 			console.log("callee");
 			console.log(arguments.callee);
-			eventListenerMsgBtnCancel = arguments.callee;
+			//eventListenerMsgBtnCancel = arguments.callee;
 			//this.removeEventListener("click",click2,false);
+			messageDiv.style.display = "none";
 			cancelFn();
 		},false);
 		//add event to array 
