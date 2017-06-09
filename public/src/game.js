@@ -112,6 +112,14 @@ var eventListenerPwdBtnSkip= null;
 var eventListenerPwdBtnCancel= null;
 var eventListenerPwdBtnPublic= null;
 var allEvents;
+		//initialize global event arrays
+		eventListenerMsgBtnOk = new Array();
+		eventListenerMsgBtnCancel = new Array();
+		eventListenerPwdBtnOk = new Array();
+		eventListenerPwdBtnSkip = new Array();
+		eventListenerPwdBtnCancel = new Array();
+		eventListenerPwdBtnPublic = new Array();
+		allEvents = [];
 
 // Toni is very sorry this is so ugly, but it's an easy way to have the svg string for the New Avatar image
 const newAvatarImg = "<!--FROM THE BLANK--><svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">" +
@@ -170,16 +178,6 @@ Game =
 {
 	start: function()
 	{
-
-
-		//initialize global event arrays
-		eventListenerMsgBtnOk = new Array();
-		eventListenerMsgBtnCancel = new Array();
-		eventListenerPwdBtnOk = new Array();
-		eventListenerPwdBtnSkip = new Array();
-		eventListenerPwdBtnCancel = new Array();
-		eventListenerPwdBtnPublic = new Array();
-		allEvents = [];
 
 		Crafty.init(screenWidth, screenHeight, document.getElementById('gameDiv'));
 		Crafty.background(bgroundColor);
