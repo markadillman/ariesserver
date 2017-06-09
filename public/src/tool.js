@@ -984,9 +984,12 @@ function displayMessage(msg, okFn, cancelFn, useTextInput, hideCancelButton, def
 		//add event to array
 		if (!(eventListenerMsgBtnOk===null) || !(eventListenerMsgBtnOk ===undefined))
 		{
-			eventListenerMsgBtnOk.push(tempEventOkTop);
-			console.log("ok");
-			console.log(eventListenerMsgBtnOk);
+			if (Object.prototype.toString.call(eventListenerMsgBtnOk) === '[object Array]')
+			{
+				eventListenerMsgBtnOk.push(tempEventOkTop);
+				console.log("ok");
+				console.log(eventListenerMsgBtnOk);
+			}
 		}
 		//CANCEL BUTTON
 		var tempEventCancelTop = msgBtnCancel.eventListener('click',function(){
@@ -1001,9 +1004,13 @@ function displayMessage(msg, okFn, cancelFn, useTextInput, hideCancelButton, def
 		},false);
 		if (!(eventListenerMsgBtnCancel===null) || !(eventListenerMsgBtnCancel ===undefined))
 		{
-			eventListenerMsgBtnCancel.push(tempEventCancelTop);
-			console.log("cancel");
-			console.log(eventListenerMsgBtnCancel);}
+			if (Object.prototype.toString.call(eventListenerMsgBtnCancel) === '[object Array]')
+			{
+				eventListenerMsgBtnCancel.push(tempEventCancelTop);
+				console.log("cancel");
+				console.log(eventListenerMsgBtnCancel);
+			}
+		}
 		//return;
 	}
 	else if (initCoords) {
@@ -1022,9 +1029,12 @@ function displayMessage(msg, okFn, cancelFn, useTextInput, hideCancelButton, def
 		//add event to array 
 		if (!(eventListenerMsgBtnOk===null) || !(eventListenerMsgBtnOk ===undefined))
 		{
-			eventListenerMsgBtnOk.push(tempEventOkMid);
-			console.log("ok");
-			console.log(eventListenerMsgBtnOk);
+			if (Object.prototype.toString.call(eventListenerMsgBtnOk) === '[object Array]')
+			{
+				eventListenerMsgBtnOk.push(tempEventOkMid);
+				console.log("ok");
+				console.log(eventListenerMsgBtnOk);
+			}
 		}
 		//CANCEL BUTTON
 		var tempEventCancelMid = msgBtnCancel.eventListener('click',function(){
@@ -1039,9 +1049,12 @@ function displayMessage(msg, okFn, cancelFn, useTextInput, hideCancelButton, def
 		//add event to array 
 		if (!(eventListenerMsgBtnCancel===null) || !(eventListenerMsgBtnCancel ===undefined))
 		{
-			eventListenerMsgBtnCancel.push(tempEventCancelMid);
-			console.log("cancel");
-			console.log(eventListenerMsgBtnCancel);
+			if (Object.prototype.toString.call(eventListenerMsgBtnCancel) === '[object Array]')
+			{
+				eventListenerMsgBtnCancel.push(tempEventCancelMid);
+				console.log("cancel");
+				console.log(eventListenerMsgBtnCancel);
+			}
 		}
 		//return;
 	}
@@ -1059,9 +1072,12 @@ function displayMessage(msg, okFn, cancelFn, useTextInput, hideCancelButton, def
 		//add event to array 
 		if (!(eventListenerMsgBtnOk===null) || !(eventListenerMsgBtnOk ===undefined))
 		{
-			eventListenerMsgBtnOk.push(tempEventOkBot);
-			console.log("ok");
-			console.log(eventListenerMsgBtnOk);
+			if (Object.prototype.toString.call(eventListenerMsgBtnOk) === '[object Array]')
+			{
+				eventListenerMsgBtnOk.push(tempEventOkBot);
+				console.log("ok");
+				console.log(eventListenerMsgBtnOk);
+			}
 		}
 		//CANCEL BUTTON
 		var tempEventCancelBot = msgBtnCancel.eventListener('click',function(){
@@ -1073,9 +1089,12 @@ function displayMessage(msg, okFn, cancelFn, useTextInput, hideCancelButton, def
 		},false);
 		//add event to array 
 		if (!(eventListenerMsgBtnCancel===null) || !(eventListenerMsgBtnCancel ===undefined)){
-			eventListenerMsgBtnCancel.push(tempEventCancelBot);
-			console.log("cancel");
-			console.log(eventListenerMsgBtnCancel);
+			if (Object.prototype.toString.call(eventListenerMsgBtnCancel) === '[object Array]')
+			{
+				eventListenerMsgBtnCancel.push(tempEventCancelBot);
+				console.log("cancel");
+				console.log(eventListenerMsgBtnCancel);
+			}
 		}
 	}
 	// use or hide text input element
