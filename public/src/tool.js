@@ -119,6 +119,15 @@ var svgAppend = "</svg>";
 var passwordReprompt = false;
 const passwordReenterPrompt = "Please re-enter your tile's password to submit your edits.";
 
+//this will contain references to all specific button event listeners
+var eventListenerMsgBtnOK = null;
+var eventListenerMsgBtnCancel = null;
+var eventListenerPwdBtnOk= null;
+var eventListenerPwdBtnSkip= null;
+var eventListenerPwdBtnCancel= null;
+var eventListenerPwdBtnPublic= null;
+var allEvents=null;
+
 //this will allow removal of unknown, dynamic event listeners, 
 //adapted from code at http://stackoverflow.com/questions/8841138/remove-event-listener-in-java
 //credit to SO user TERMtm
@@ -437,6 +446,16 @@ function initHTML() {
 	if (verboseDebugging){
 		console.log("html loaded");
 	}
+
+			//initialize global event arrays
+		eventListenerMsgBtnOk = new Array();
+		eventListenerMsgBtnCancel = new Array();
+		eventListenerPwdBtnOk = new Array();
+		eventListenerPwdBtnSkip = new Array();
+		eventListenerPwdBtnCancel = new Array();
+		eventListenerPwdBtnPublic = new Array();
+		allEvents = [];
+		
 	// set the page header (defaults to avatar mode since that's used first)
 	pageHeader = document.getElementById("drawingToolHeader");
 	pageHeader.innerHTML = avatarHeader;
