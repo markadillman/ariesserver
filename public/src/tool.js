@@ -132,12 +132,12 @@ var allEvents=null;
 //adapted from code at http://stackoverflow.com/questions/8841138/remove-event-listener-in-java
 //credit to SO user TERMtm
 HTMLElement.prototype.eventListener = function(type, func, capture){
-	console.log("IN PROTO THIS");
+	/*console.log("IN PROTO THIS");
 	console.log(this);
 	console.log("IN PROTO ARGUMENTS");
 	console.log(arguments);
 	console.log("IN PROTO ARGUMENTS[1]");
-	console.log(arguments[1]);
+	console.log(arguments[1]);*/
 	//a single object argument possessing the event listener will now remove that event listener
 	if(!(arguments[0] === "click")){
 		console.log("this weird stuff is happening");
@@ -447,14 +447,14 @@ function initHTML() {
 		console.log("html loaded");
 	}
 
-			//initialize global event arrays
-		eventListenerMsgBtnOk = new Array();
-		eventListenerMsgBtnCancel = new Array();
-		eventListenerPwdBtnOk = new Array();
-		eventListenerPwdBtnSkip = new Array();
-		eventListenerPwdBtnCancel = new Array();
-		eventListenerPwdBtnPublic = new Array();
-		allEvents = [];
+	//initialize global event arrays
+	eventListenerMsgBtnOk = new Array();
+	eventListenerMsgBtnCancel = new Array();
+	eventListenerPwdBtnOk = new Array();
+	eventListenerPwdBtnSkip = new Array();
+	eventListenerPwdBtnCancel = new Array();
+	eventListenerPwdBtnPublic = new Array();
+	allEvents = [];
 
 	// set the page header (defaults to avatar mode since that's used first)
 	pageHeader = document.getElementById("drawingToolHeader");
@@ -989,18 +989,18 @@ function doQuitToHomeScreen() {
 // these functions should include: messageDiv.style.display = "none";
 function displayMessage(msg, okFn, cancelFn, useTextInput, hideCancelButton, defaultText, textInputPassword, initCoords) {
 	//remove previous event listeners so that they do not aggregate to multiple per push
-	console.log("MESSAGE");
-	console.log(msg);
+	/*console.log("MESSAGE");
+	console.log(msg);*/
 	removeEventListeners();
 	messageText.innerHTML = msg;
 	if (initCoords&&textInputPassword){
 		//this works because the truthiness of strings in Javascriprt. Both true and defined.
 		//OK BUTTON
 		var tempEventOkTop = msgBtnOK.eventListener('click',function(){
-			console.log("callee");
+			/*console.log("callee");
 			console.log(arguments.callee);
-			onsole.log("this");
-			console.log(this);
+			console.log("this");
+			console.log(this);*/
 			//eventListenerMsgBtnOk = arguments.callee;
 			//this.removeEventListener("click",click1, false);
 			eventListenerMsgBtnOk.push(arguments.callee);
@@ -1016,16 +1016,16 @@ function displayMessage(msg, okFn, cancelFn, useTextInput, hideCancelButton, def
 			{
 				eventListenerMsgBtnOk.push(tempEventOkTop);
 				allEvents.push(tempEventOkTop);
-				console.log("ok post bind");
-				console.log(eventListenerMsgBtnOk);
+				/*console.log("ok post bind");
+				console.log(eventListenerMsgBtnOk);*/
 			}
 		}
 		//CANCEL BUTTON
 		var tempEventCancelTop = msgBtnCancel.eventListener('click',function(){
-			console.log("callee");
+			/*console.log("callee");
 			console.log(arguments.callee);
 			console.log("this");
-			console.log(this);
+			console.log(this);*/
 			//eventListenerMsgBtnCancel = arguments.callee;
 			//this.removeEventListener("click",click2,false);
 			eventListenerMsgBtnCancel.push(arguments.callee);
@@ -1040,8 +1040,8 @@ function displayMessage(msg, okFn, cancelFn, useTextInput, hideCancelButton, def
 			{
 				eventListenerMsgBtnCancel.push(tempEventCancelTop);
 				allEvents.push(tempEventCancelTop);
-				console.log("cancel post bind");
-				console.log(eventListenerMsgBtnCancel);
+				/*console.log("cancel post bind");
+				console.log(eventListenerMsgBtnCancel);*/
 			}
 		}
 		//return;
@@ -1050,10 +1050,10 @@ function displayMessage(msg, okFn, cancelFn, useTextInput, hideCancelButton, def
 		console.log("second block");
 		//OK BUTTON
 		var tempEventOkMid = msgBtnOK.eventListener('click',function(){
-			console.log("callee");
+			/*console.log("callee");
 			console.log(arguments.callee);
 			console.log("this");
-			console.log(this);
+			console.log(this);*/
 			//eventListenerMsgBtnOk = arguments.callee;
 			//this.removeEventListener("click",click1, false);
 			eventListenerMsgBtnOk.push(arguments.callee);
@@ -1069,14 +1069,14 @@ function displayMessage(msg, okFn, cancelFn, useTextInput, hideCancelButton, def
 			{
 				eventListenerMsgBtnOk.push(tempEventOkMid);
 				allEvents.push(tempEventOkMid);
-				console.log("ok post bind");
-				console.log(eventListenerMsgBtnOk);
+				/*console.log("ok post bind");
+				console.log(eventListenerMsgBtnOk);*/
 			}
 		}
 		//CANCEL BUTTON
 		var tempEventCancelMid = msgBtnCancel.eventListener('click',function(){
-			console.log("callee");
-			console.log(arguments.callee);
+			/*console.log("callee");
+			console.log(arguments.callee);*/
 
 			//eventListenerMsgBtnCancel = arguments.callee;
 			//this.removeEventListener("click",click2,false);
@@ -1093,8 +1093,8 @@ function displayMessage(msg, okFn, cancelFn, useTextInput, hideCancelButton, def
 			{
 				eventListenerMsgBtnCancel.push(tempEventCancelMid);
 				allEvents.push(tempEventCancelMid);
-				console.log("cancel post bind");
-				console.log(eventListenerMsgBtnCancel);
+				/*console.log("cancel post bind");
+				console.log(eventListenerMsgBtnCancel);*/
 			}
 		}
 		//return;
@@ -1104,15 +1104,15 @@ function displayMessage(msg, okFn, cancelFn, useTextInput, hideCancelButton, def
 		console.log("third block");
 		//OK BUTTON
 		var tempEventOkBot = msgBtnOK.eventListener('click',function(){
-			console.log("callee");
-			console.log(arguments.callee);
+			/*console.log("callee");
+			console.log(arguments.callee);*/
 
 			//eventListenerMsgBtnOk = arguments.callee;
 			//this.removeEventListener("click",click1,false);
 			eventListenerMsgBtnOk.push(arguments.callee);
-			console.log("INNER REMOVE");
+			/*console.log("INNER REMOVE");
 			console.log("list");
-			console.log(eventListenerMsgBtnOk);
+			console.log(eventListenerMsgBtnOk);*/
 			removeEventListeners();
 			messageDiv.style.display = "none";
 			okFn();
@@ -1124,20 +1124,20 @@ function displayMessage(msg, okFn, cancelFn, useTextInput, hideCancelButton, def
 			{
 				eventListenerMsgBtnOk.push(tempEventOkBot);
 				allEvents.push(tempEventOkBot);
-				console.log("ok post bind");
-				console.log(eventListenerMsgBtnOk);
+				/*console.log("ok post bind");
+				console.log(eventListenerMsgBtnOk);*/
 			}
 		}
 		//CANCEL BUTTON
 		var tempEventCancelBot = msgBtnCancel.eventListener('click',function(){
-			console.log("callee");
-			console.log(arguments.callee);
+			/*console.log("callee");
+			console.log(arguments.callee);*/
 			//eventListenerMsgBtnCancel = arguments.callee;
 			//this.removeEventListener("click",click2,false);
 			eventListenerMsgBtnCancel.push(arguments.callee);
-			console.log("INNER REMOVE");
+			/*console.log("INNER REMOVE");
 			console.log("list");
-			console.log(eventListenerMsgBtnCancel);
+			console.log(eventListenerMsgBtnCancel);*/
 			removeEventListeners();
 			messageDiv.style.display = "none";
 			cancelFn();
@@ -1148,8 +1148,8 @@ function displayMessage(msg, okFn, cancelFn, useTextInput, hideCancelButton, def
 			{
 				eventListenerMsgBtnCancel.push(tempEventCancelBot);
 				allEvents.push(tempEventCancelBot);
-				console.log("cancel post bind");
-				console.log(eventListenerMsgBtnCancel);
+				/*console.log("cancel post bind");
+				console.log(eventListenerMsgBtnCancel);*/
 			}
 		}
 	}
@@ -1192,7 +1192,7 @@ function displayMessage(msg, okFn, cancelFn, useTextInput, hideCancelButton, def
 //every time on the first line of displayMessage or displayPassword to avoid eventListeners from
 //accumulating. Somewhat redundant with the new self-removing functions above.
 function removeEventListeners(){
-	console.log("starting arrays for clear");
+	/*console.log("starting arrays for clear");
 	console.log("remove listeners ok");
 	console.log(eventListenerMsgBtnOk);
 	console.log("remove listenerscancel");
@@ -1204,7 +1204,7 @@ function removeEventListeners(){
 	console.log("remove listenerspasswordSkip");
 	console.log(eventListenerPwdBtnSkip);
 	console.log("remove listenerspasswordPublic");
-	console.log(eventListenerPwdBtnPublic);
+	console.log(eventListenerPwdBtnPublic);*/
 
 	var pwdBtnOK = document.getElementById('pwdBtnOK');
 	var pwdBtnSkip = document.getElementById('pwdBtnSkip');
@@ -1233,13 +1233,13 @@ function removeEventListeners(){
 	if (eventListenerMsgBtnOk.length > 1){
 		for (var i = (eventListenerMsgBtnOk.length-1); i >= 0 ; i = i - 1){
 			var tempnog = msgBtnOK.eventListener(eventListenerMsgBtnOk[i]);
-			console.log("function");
-			console.log(eventListenerMsgBtnOk[i]);
+			/*console.log("function");
+			console.log(eventListenerMsgBtnOk[i]);*/
 			eventListenerMsgBtnOk.splice(i,1);
-			console.log("tempnog");
+			/*console.log("tempnog");
 			console.log(tempnog);
 			console.log("okarray");
-			console.log(eventListenerMsgBtnOk);
+			console.log(eventListenerMsgBtnOk);*/
 		}
 	}
 	/*if (msgOk.length > 1){
@@ -1257,13 +1257,13 @@ function removeEventListeners(){
 	if (eventListenerMsgBtnCancel.length > 1){
 		for (var i = (eventListenerMsgBtnCancel.length-1); i >= 0; i = i - 1){
 			var tempnog = msgBtnCancel.eventListener(eventListenerMsgBtnCancel[i]);
-			console.log("function");
-			console.log(eventListenerMsgBtnCancel[i]);
+			/*console.log("function");
+			console.log(eventListenerMsgBtnCancel[i]);*/
 			eventListenerMsgBtnCancel.splice(i,1);
-			console.log("tempnog");
+			/*console.log("tempnog");
 			console.log(tempnog);
 			console.log("cancelarray");
-			console.log(eventListenerMsgBtnCancel);
+			console.log(eventListenerMsgBtnCancel);*/
 		}
 	}
 	/*if (msgCancel.length > 1){
@@ -1281,37 +1281,37 @@ function removeEventListeners(){
 	if (eventListenerPwdBtnOk.length > 1){
 		for (var i = (eventListenerPwdBtnOk.length-1); i >= 0 ; i = i - 1){
 			var tempnog = pwdBtnOK.eventListener(eventListenerPwdBtnOk[i]);
-			console.log("function");
-			console.log(eventListenerPwdBtnOk[i]);
+			/*console.log("function");
+			console.log(eventListenerPwdBtnOk[i]);*/
 			eventListenerPwdBtnOk.splice(i,1);
-			console.log("tempnog");
+			/*console.log("tempnog");
 			console.log(tempnog);
 			console.log("pwdokarray");
-			console.log(eventListenerPwdBtnOk);
+			console.log(eventListenerPwdBtnOk);*/
 		}
 	}
 	if (eventListenerPwdBtnCancel.length > 1){
 		for (var i = (eventListenerPwdBtnCancel.length-1); i >= 0 ; i = i - 1){
 			var tempnog = pwdBtnCancel.eventListener(eventListenerPwdBtnCancel[i]);
-			console.log("function");
-			console.log(eventListenerPwdBtnCancel[i]);
+			/*console.log("function");
+			console.log(eventListenerPwdBtnCancel[i]);*/
 			eventListenerPwdBtnCancel.splice(i,1);
-			console.log("tempnog");
+			/*console.log("tempnog");
 			console.log(tempnog);
 			console.log("pwdcancelarray");
-			console.log(eventListenerPwdBtnCancel);
+			console.log(eventListenerPwdBtnCancel);*/
 		}
 	}
 	if (eventListenerPwdBtnSkip.length > 1){
 		for (var i = (eventListenerPwdBtnSkip.length - 1); i >= 0 ; i = i - 1){
 			var tempnog = pwdBtnSkip.eventListener(eventListenerPwdBtnSkip[i]);
-			console.log("function");
-			console.log(eventListenerPwdBtnSkip[i]);
+			/*console.log("function");
+			console.log(eventListenerPwdBtnSkip[i]);*/
 			eventListenerPwdBtnSkip.splice(i,1);
-			console.log("tempnog");
+			/*console.log("tempnog");
 			console.log(tempnog);
 			console.log("pwdskiparray");
-			console.log(eventListenerPwdBtnSkip);
+			console.log(eventListenerPwdBtnSkip);*/
 		}
 	}
 	if (eventListenerPwdBtnPublic.length > 1){
