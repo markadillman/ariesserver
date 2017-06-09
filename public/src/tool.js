@@ -125,6 +125,7 @@ var eventListenerPwdBtnOk= null;
 var eventListenerPwdBtnSkip= null;
 var eventListenerPwdBtnCancel= null;
 var eventListenerPwdBtnPublic= null;
+var allEvents = [];
 //this will allow removal of unknown, dynamic event listeners, 
 //adapted from code at http://stackoverflow.com/questions/8841138/remove-event-listener-in-java
 //credit to SO user TERMtm
@@ -144,6 +145,9 @@ HTMLElement.prototype.eventListener = function(type, func, capture){
 		//regular add function
 		console.log("regular event add");
 		this.addEventListener(type,func,capture);
+		alLEvents.push(arguments[1]);
+		console.log("all events in proto");
+		console.log(allEvents);
 	}
 	return arguments;
 }
@@ -1197,6 +1201,16 @@ function removeEventListeners(){
 	}
 	//all nodes are gathered in reference-able variables. Now use the prototype that tracks them
 	//to remove all the event listeners regardless of what they are or what args they have.
+	if (allEvents.length > 1){
+		for (var i = (allEvents.length - 1); i >= 0 ; i = i - 1){
+			msgBtnOK.eventListener(allEvents[i]);
+			msgBtnCancel.eventListener(allEvents[i]);
+			pwdBtnOK.eventListener(allEvents[i]);
+			pwdBtnCancel.eventListener(allEvents[i]);
+			pwdBtnSkip.eventListener(allEvents[i]);
+			pwdBtnPublic.eventListener(allEvents[i]);
+		}
+	}
 	if (eventListenerMsgBtnOk.length > 1){
 		for (var i = (eventListenerMsgBtnOk.length-1); i >= 0 ; i = i - 1){
 			var tempnog = msgBtnOK.eventListener(eventListenerMsgBtnOk[i]);
