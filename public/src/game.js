@@ -104,23 +104,6 @@ var carouselStage;
 var carouselData = [];
 var carouselIndex = 0;
 
-//this will contain references to all specific button event listeners
-var eventListenerMsgBtnOK = null;
-var eventListenerMsgBtnCancel = null;
-var eventListenerPwdBtnOk= null;
-var eventListenerPwdBtnSkip= null;
-var eventListenerPwdBtnCancel= null;
-var eventListenerPwdBtnPublic= null;
-var allEvents;
-		//initialize global event arrays
-		eventListenerMsgBtnOk = new Array();
-		eventListenerMsgBtnCancel = new Array();
-		eventListenerPwdBtnOk = new Array();
-		eventListenerPwdBtnSkip = new Array();
-		eventListenerPwdBtnCancel = new Array();
-		eventListenerPwdBtnPublic = new Array();
-		allEvents = [];
-
 // Toni is very sorry this is so ugly, but it's an easy way to have the svg string for the New Avatar image
 const newAvatarImg = "<!--FROM THE BLANK--><svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">" +
 		"<clipPath id=\"avatarClipPath\"><ellipse cx=\"300\" cy=\"175\" rx=\"87\" ry=\"174\">" + 
@@ -1226,8 +1209,6 @@ function toggleButtonsOnNew() {
 			turnOnEnterButton();
 		}
 	}
-	//MARK ADDED
-	turnOnViewButtons();
 }
 function turnOffEnterButton() {
 	// turn off the "Enter the Blank" button
