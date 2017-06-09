@@ -1095,7 +1095,7 @@ function displayMessage(msg, okFn, cancelFn, useTextInput, hideCancelButton, def
 			messageDiv.style.display = "none";
 			cancelFn();
 		},false);
-		onsole.log("TEMP EVENT CANCEL BOT");
+		console.log("TEMP EVENT CANCEL BOT");
 		console.log(tempEventCancelBot);
 		//add event to array 
 		if (!(eventListenerMsgBtnCancel===null) || !(eventListenerMsgBtnCancel ===undefined)){
