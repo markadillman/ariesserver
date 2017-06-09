@@ -976,7 +976,7 @@ function displayMessage(msg, okFn, cancelFn, useTextInput, hideCancelButton, def
 			console.log(arguments.callee);
 			onsole.log("this");
 			console.log(this);
-			eventListenerMsgBtnOk = arguments.callee;
+			//eventListenerMsgBtnOk = arguments.callee;
 			//this.removeEventListener("click",click1, false);
 			okFn(initCoords.xcoord,initCoords.ycoord,textInputPassword);
 			//return;
@@ -997,7 +997,7 @@ function displayMessage(msg, okFn, cancelFn, useTextInput, hideCancelButton, def
 			console.log(arguments.callee);
 			console.log("this");
 			console.log(this);
-			eventListenerMsgBtnCancel = arguments.callee;
+			//eventListenerMsgBtnCancel = arguments.callee;
 			//this.removeEventListener("click",click2,false);
 			cancelFn();
 			//return;
@@ -1021,7 +1021,7 @@ function displayMessage(msg, okFn, cancelFn, useTextInput, hideCancelButton, def
 			console.log(arguments.callee);
 			console.log("this");
 			console.log(this);
-			eventListenerMsgBtnOk = arguments.callee;
+			//eventListenerMsgBtnOk = arguments.callee;
 			//this.removeEventListener("click",click1, false);
 			okFn(initCoords.xcoord,initCoords.ycoord);
 			//return;
@@ -1041,7 +1041,7 @@ function displayMessage(msg, okFn, cancelFn, useTextInput, hideCancelButton, def
 			console.log("callee");
 			console.log(arguments.callee);
 
-			eventListenerMsgBtnCancel = arguments.callee;
+			//eventListenerMsgBtnCancel = arguments.callee;
 			//this.removeEventListener("click",click2,false);
 			cancelFn();
 			//return;
