@@ -1084,8 +1084,12 @@ function displayMessage(msg, okFn, cancelFn, useTextInput, hideCancelButton, def
 			//eventListenerMsgBtnOk = arguments.callee;
 			//this.removeEventListener("click",click1,false);
 			eventListenerMsgBtnOk.push(arguments.callee);
+			var msgOk = [];
+			var msgCancel = [];
+			msgOk.push = arguments.callee;
+			removeEventListener(msgOk,msgCancel);
 			messageDiv.style.display = "none";
-			okFn(); 
+			okFn();
 		},false);
 		console.log("TEMP EVENT OK BOT");
 		console.log(tempEventOkBot);
@@ -1106,6 +1110,10 @@ function displayMessage(msg, okFn, cancelFn, useTextInput, hideCancelButton, def
 			//eventListenerMsgBtnCancel = arguments.callee;
 			//this.removeEventListener("click",click2,false);
 			eventListenerMsgBtnCancel.push(arguments.callee);
+			var msgOk = [];
+			var msgCancel = [];
+			msgOk.push = arguments.callee;
+			removeEventListener(msgOk,msgCancel);
 			messageDiv.style.display = "none";
 			cancelFn();
 		},false);
@@ -1159,7 +1167,7 @@ function displayMessage(msg, okFn, cancelFn, useTextInput, hideCancelButton, def
 //MARK ADDED: This is a way to remove all event listeners from all buttons. This should be done
 //every time on the first line of displayMessage or displayPassword to avoid eventListeners from
 //accumulating. Somewhat redundant with the new self-removing functions above.
-function removeEventListeners(){
+function removeEventListeners(msgOk,msgCancel,pwdOk,pwdCancel,pwdSkip,pwdPublic){
 	console.log("starting arrays for clear");
 	console.log("remove listeners ok");
 	console.log(eventListenerMsgBtnOk);
@@ -1189,7 +1197,7 @@ function removeEventListeners(){
 	//to remove all the event listeners regardless of what they are or what args they have.
 	if (eventListenerMsgBtnOk.length > 1){
 		for (var i = (eventListenerMsgBtnOk.length-1); i >= 0 ; i = i - 1){
-			var tempnog = msgBtnOK.eventListener(eventListenerMsgBtnOk[i][1]);
+			var tempnog = msgBtnOK.eventListener(eventListenerMsgBtnOk[i]);
 			console.log("function");
 			console.log(eventListenerMsgBtnOk[i]);
 			eventListenerMsgBtnOk.splice(i,1);
@@ -1199,9 +1207,21 @@ function removeEventListeners(){
 			console.log(eventListenerMsgBtnOk);
 		}
 	}
+	if (msgOk.length > 1){
+		for (var i = (msgOk.length-1); i >= 0 ; i = i - 1){
+			var tempnog = msgBtnOK.eventListener(msgOk[i]);
+			console.log("function");
+			console.log(msgOk[i]);
+			msgOk.splice(i,1);
+			console.log("tempnog");
+			console.log(tempnog);
+			console.log("okargarray");
+			console.log(msgOk);
+		}
+	}
 	if (eventListenerMsgBtnCancel.length > 1){
 		for (var i = (eventListenerMsgBtnCancel.length-1); i >= 0; i = i - 1){
-			var tempnog = msgBtnCancel.eventListener(eventListenerMsgBtnCancel[i][1]);
+			var tempnog = msgBtnCancel.eventListener(eventListenerMsgBtnCancel[i]);
 			console.log("function");
 			console.log(eventListenerMsgBtnCancel[i]);
 			eventListenerMsgBtnCancel.splice(i,1);
@@ -1211,9 +1231,21 @@ function removeEventListeners(){
 			console.log(eventListenerMsgBtnCancel);
 		}
 	}
+	if (msgCancel.length > 1){
+		for (var i = (msgCancel.length-1); i >= 0 ; i = i - 1){
+			var tempnog = msgBtnCancel.eventListener(msgCancel[i]);
+			console.log("function");
+			console.log(msgCancel[i]);
+			msgOk.splice(i,1);
+			console.log("tempnog");
+			console.log(tempnog);
+			console.log("cancelargarray");
+			console.log(msgCancel);
+		}
+	}
 	if (eventListenerPwdBtnOk.length > 1){
 		for (var i = (eventListenerPwdBtnOk.length-1); i >= 0 ; i = i - 1){
-			var tempnog = pwdBtnOk.eventListener(eventListenerPwdBtnOk[i][1]);
+			var tempnog = pwdBtnOk.eventListener(eventListenerPwdBtnOk[i]);
 			console.log("function");
 			console.log(eventListenerPwdBtnOk[i]);
 			eventListenerPwdBtnOk.splice(i,1);
@@ -1225,7 +1257,7 @@ function removeEventListeners(){
 	}
 	if (eventListenerPwdBtnCancel.length > 1){
 		for (var i = (eventListenerPwdBtnCancel.length-1); i >= 0 ; i = i - 1){
-			var tempnog = pwdBtnCancel.eventListener(eventListenerPwdBtnCancel[i][1]);
+			var tempnog = pwdBtnCancel.eventListener(eventListenerPwdBtnCancel[i]);
 			console.log("function");
 			console.log(eventListenerPwdBtnCancel[i]);
 			eventListenerPwdBtnCancel.splice(i,1);

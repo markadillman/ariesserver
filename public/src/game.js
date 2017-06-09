@@ -1253,7 +1253,6 @@ function turnOnViewButtons() {
 	if (verboseDebugging){
 		console.log("buttons bound again");
 	}
-	Crafty
 	// turn button functionality back on
 	Crafty('myAvatarButton').bind('Click', myAvatarButtonClick);
 	Crafty('myAvatarButton').addComponent('myButton');
