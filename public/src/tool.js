@@ -136,7 +136,7 @@ HTMLElement.prototype.eventListener = function(type, func, capture){
 	//a single object argument possessing the event listener will now remove that event listener
 	if(arguments[0] == "click" && (!arguments[0].nodeType)){
 		console.log("this weird stuff is happening");
-		return this.removeEventListener.apply(this,arguments[0]);
+		return this.removeEventListener.apply(this,arguments);
 	}
 	//regular add function
 	this.addEventListener(type,func,capture);
